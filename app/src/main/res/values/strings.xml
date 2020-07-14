@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">WanAndroid</string>
+    <string name="app_name">玩Android</string>
+    <string name="title_activity_main">MainActivity</string>
 </resources>
