@@ -1,7 +1,5 @@
 package com.gochiusa.wanandroid.util.http;
 
-import com.gochiusa.wanandroid.util.http.base.BaseCall;
-
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
@@ -10,7 +8,7 @@ import java.net.CookieStore;
 /**
  *  类的设计模仿自OkHttp的OkHttpClient
  */
-public final class HttpClient implements BaseCall.Factory {
+public final class HttpClient implements Call.Factory {
 
     /**
      *  最大连接超时
@@ -30,14 +28,14 @@ public final class HttpClient implements BaseCall.Factory {
      */
     boolean doInput = true;
     /**
-     *  默认不允许输出
+     *  默认不允许输出。如果在Request设置了请求体，进行Post请求时，默认设置会被覆盖。
      */
     boolean doOutPut = false;
 
 
     @Override
-    public BaseCall newCall(Request request) {
-        return new Call(this, request);
+    public Call newCall(Request request) {
+        return new RealCall(this, request);
     }
 
     /**

@@ -1,29 +1,23 @@
 package com.gochiusa.wanandroid.util.http;
 
-import com.gochiusa.wanandroid.util.http.base.BaseCall;
-
 import java.io.IOException;
 
-/**
- * 类的设计模仿自OkHttp的Call
- */
-public final class Call implements BaseCall {
+public interface Call {
 
-    private HttpClient mClient;
-    private Request mRequest;
-    protected Call(HttpClient httpClient, Request request) {
-        mClient = httpClient;
-        mRequest = request;
-    }
+    /**
+     * 返回原始的Request
+     */
+    Request request();
 
+    /**
+     *  发送同步请求
+     */
+    Response execute() throws IOException;
 
-    @Override
-    public Request request() {
-        return mRequest;
-    }
-
-    @Override
-    public Response execute() throws IOException {
-        return null;
+    /**
+     *  建造Call类的接口
+     */
+    interface Factory {
+        Call newCall(Request request);
     }
 }

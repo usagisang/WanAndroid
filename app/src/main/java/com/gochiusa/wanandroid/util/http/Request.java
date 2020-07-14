@@ -1,7 +1,7 @@
 package com.gochiusa.wanandroid.util.http;
 
 
-public class Request {
+public final class Request {
     public static final String GET_METHOD = "GET";
     public static final String POST_METHOD = "POST";
     /**
@@ -18,6 +18,11 @@ public class Request {
      *  想要向其发起请求的网址
      */
     String mHttpUrl;
+
+    /**
+     *  请求头
+     */
+    Headers mHeaders;
 
     /**
      *  辅助方法，设置请求的方法和请求体
@@ -48,6 +53,18 @@ public class Request {
             mRequest.mHttpUrl = url;
             return this;
         }
+
+        /**
+         * 添加请求头
+         */
+        public Builder addHeader(String name, String value) {
+            if (mRequest.mHeaders == null) {
+                mRequest.mHeaders = new Headers();
+            }
+            mRequest.mHeaders.setHeader(name, value);
+            return this;
+        }
+
 
         public Request build() {
             return mRequest;
