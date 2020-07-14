@@ -44,7 +44,12 @@ public final class HttpClient implements BaseCall.Factory {
      *  HttpClient的建造类，模仿使用建造者模式
      */
     public static final class Builder {
-        private HttpClient mHttpClient = new HttpClient();
+        private HttpClient mHttpClient;
+
+        public Builder() {
+            mHttpClient = new HttpClient();
+        }
+
         public Builder setConnectionTimeout(int connectionTimeout) {
             mHttpClient.mConnectionTimeout = connectionTimeout;
             return this;
@@ -77,10 +82,7 @@ public final class HttpClient implements BaseCall.Factory {
         }
 
         public HttpClient build() {
-            HttpClient httpClient = mHttpClient;
-            // 将引用置空
-            mHttpClient = null;
-            return httpClient;
+            return mHttpClient;
         }
     }
 }

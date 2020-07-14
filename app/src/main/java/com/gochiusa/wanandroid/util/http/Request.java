@@ -28,7 +28,11 @@ public class Request {
     }
 
     public static final class Builder {
-        private Request mRequest = new Request();
+        private Request mRequest;
+
+        public Builder() {
+            mRequest = new Request();
+        }
 
         public Builder post(RequestBody requestBody) {
             mRequest.methodWithBody(Request.POST_METHOD, requestBody);
@@ -46,10 +50,7 @@ public class Request {
         }
 
         public Request build() {
-            Request request = mRequest;
-            // 置空引用
-            mRequest = null;
-            return request;
+            return mRequest;
         }
     }
 
