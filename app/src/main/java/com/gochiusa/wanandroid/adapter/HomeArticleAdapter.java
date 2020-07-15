@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.gochiusa.wanandroid.R;
 import com.gochiusa.wanandroid.entity.Article;
 
+import java.util.Collection;
 import java.util.List;
 
 
@@ -29,6 +30,11 @@ public class HomeArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
      */
     private static int FOOT_TYPE = 1;
 
+    /**
+     * 尾布局
+     */
+    private View mFootView;
+
     public HomeArticleAdapter(List<Article> articleList) {
         mArticleList = articleList;
     }
@@ -42,9 +48,9 @@ public class HomeArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             // 使用子项创建ViewHolder，子项已经封装在其中
             return new ContentViewHolder(itemView);
         } else {
-            View footView = LayoutInflater.from(parent.getContext()).inflate(
+            mFootView = LayoutInflater.from(parent.getContext()).inflate(
             R.layout.item_list_footer_view, parent, false);
-            return new FootViewHolder(footView);
+            return new FootViewHolder(mFootView);
         }
     }
 
@@ -77,6 +83,31 @@ public class HomeArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         } else {
             return CONTENT_TYPE;
         }
+    }
+
+    /**
+     * 获取尾布局
+     * @return 列表末端的尾布局
+     */
+    public View getFootView() {
+        return mFootView;
+    }
+
+    /**
+     * 将外部集合的数据添加到数据源中，并且通知数据源更新
+     * @param collection 需要添加的数据的集合
+     */
+    public void addAll(Collection<? extends Article> collection) {
+        mArticleList.addAll(collection);
+        notifyDataSetChanged();
+    }
+
+    /**
+     * 移除数据源中所有的数据
+     */
+    public void removeAll() {
+        mArticleList.clear();
+        notifyDataSetChanged();
     }
 
     /**
