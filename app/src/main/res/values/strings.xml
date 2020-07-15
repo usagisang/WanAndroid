@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">玩Android</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="main_search">搜索</string>
 </resources>
