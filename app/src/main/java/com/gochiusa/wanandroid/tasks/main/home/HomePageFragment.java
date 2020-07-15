@@ -1,6 +1,5 @@
 package com.gochiusa.wanandroid.tasks.main.home;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,10 +16,11 @@ import com.gochiusa.wanandroid.R;
 import com.gochiusa.wanandroid.adapter.HomeArticleAdapter;
 import com.gochiusa.wanandroid.base.view.BaseFragment;
 import com.gochiusa.wanandroid.entity.Article;
+import com.gochiusa.wanandroid.util.ActivityUtil;
 import com.gochiusa.wanandroid.util.MyApplication;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 public class HomePageFragment extends BaseFragment<HomePageContract.HomePresenter>
         implements HomePageContract.HomeView {
@@ -40,9 +40,10 @@ public class HomePageFragment extends BaseFragment<HomePageContract.HomePresente
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_page, container,false);
         initChildView(view);
+        // 向Presenter请求数据（刷新操作）
+        getPresenter().refresh();
         return view;
     }
-
 
     /**
      *  初始化子项控件
@@ -51,6 +52,14 @@ public class HomePageFragment extends BaseFragment<HomePageContract.HomePresente
         mRecyclerView = parentView.findViewById(R.id.rv_main);
         mSwipeRefreshLayout = parentView.findViewById(R.id.swipe_refresh);
         initRecyclerView(mRecyclerView);
+        // 设置SwipeRefreshLayout刷新时触发的操作
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // 向Presenter请求刷新数据
+                getPresenter().refresh();
+            }
+        });
     }
 
     /**
@@ -66,31 +75,58 @@ public class HomePageFragment extends BaseFragment<HomePageContract.HomePresente
         // 初始化适配器
         mArticleAdapter = new HomeArticleAdapter(new ArrayList<Article>());
         recyclerView.setAdapter(mArticleAdapter);
+        // 为recyclerView添加滚动的监听器
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (! recyclerView.canScrollVertically(1)) {
+                    // 如果滑动到底部
+                    getPresenter().showMore();
+                }
+            }
+        });
     }
 
     @Override
-    public void addArticlesToList(List<Article> articleList) {
-
+    public void addArticlesToList(Collection<? extends Article> collection) {
+        mArticleAdapter.addAll(collection);
     }
 
+    /**
+     *  显示尾布局
+     */
     @Override
     public void showLoading() {
-
+        mArticleAdapter.getFootView().setVisibility(View.VISIBLE);
     }
 
+    /**
+     * 隐藏尾布局
+     */
     @Override
     public void hideLoading() {
-
+        mArticleAdapter.getFootView().setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void showToast(String message) {
+        ActivityUtil.showToast(message, MyApplication.getContext());
+    }
 
+    @Override
+    public void showRefreshing() {
+        mSwipeRefreshLayout.setRefreshing(true);
     }
 
     @Override
     public void hideRefreshing() {
         mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void removeAllArticle() {
+        mArticleAdapter.removeAll();
     }
 
 
