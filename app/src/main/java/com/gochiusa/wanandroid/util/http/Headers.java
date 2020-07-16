@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ *  以键值对形式储存的请求头或者响应头
+ */
 public final class Headers {
 
     /**

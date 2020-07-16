@@ -26,11 +26,11 @@ public final class HttpClient implements Call.Factory {
     /**
      *  默认允许输入
      */
-    boolean doInput = true;
+    boolean mDoInput = true;
     /**
      *  默认不允许输出。如果在Request设置了请求体，进行Post请求时，默认设置会被覆盖。
      */
-    boolean doOutPut = false;
+    boolean mDoOutPut = false;
 
 
     @Override
@@ -38,26 +38,35 @@ public final class HttpClient implements Call.Factory {
         return new RealCall(this, request);
     }
 
+    public HttpClient() {}
+
+    HttpClient(Builder builder) {
+
+    }
+
     /**
      *  HttpClient的建造类，模仿使用建造者模式
      */
     public static final class Builder {
-        private HttpClient mHttpClient;
+        /**
+         *  与{@code HttpClient}的变量，包括默认值均一一对应。
+         */
+        private int connectionTimeout = 8000;
+        private int readTimeout = 8000;
+        private boolean useCache = false;
+        private boolean doInput = true;
+        private boolean doOutPut = false;
 
-        public Builder() {
-            mHttpClient = new HttpClient();
-        }
 
         public Builder setConnectionTimeout(int connectionTimeout) {
-            mHttpClient.mConnectionTimeout = connectionTimeout;
+            this.connectionTimeout = connectionTimeout;
             return this;
         }
 
         public Builder setReadTimeout(int readTimeout) {
-            mHttpClient.mReadTimeout = readTimeout;
+            this.readTimeout = readTimeout;
             return this;
         }
-
 
         public Builder setCookieManager(CookieStore cookieStore, CookiePolicy cookiePolicy) {
             CookieHandler.setDefault(new CookieManager(cookieStore, cookiePolicy));
@@ -65,22 +74,22 @@ public final class HttpClient implements Call.Factory {
         }
 
         public Builder setUseCache(boolean useCache) {
-            mHttpClient.mUseCache = useCache;
+            this.useCache = useCache;
             return this;
         }
 
         public Builder setDoInput(boolean doInput) {
-            mHttpClient.doInput = doInput;
+            this.doInput = doInput;
             return this;
         }
 
         public Builder setDoOutPut(boolean doOutPut) {
-            mHttpClient.doOutPut = doOutPut;
+            this.doOutPut = doOutPut;
             return this;
         }
 
         public HttpClient build() {
-            return mHttpClient;
+            return new HttpClient(this);
         }
     }
 }

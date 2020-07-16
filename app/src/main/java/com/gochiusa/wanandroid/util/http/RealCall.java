@@ -90,9 +90,9 @@ public final class RealCall implements Call {
         // 设置读取数据最大超时
         urlConnection.setReadTimeout(httpClient.mReadTimeout);
         // 设置是否允许输入
-        urlConnection.setDoInput(httpClient.doInput);
+        urlConnection.setDoInput(httpClient.mDoInput);
         // 是否允许允许输出
-        urlConnection.setDoOutput(httpClient.doOutPut);
+        urlConnection.setDoOutput(httpClient.mDoOutPut);
         // 设置是否使用缓存
         urlConnection.setUseCaches(httpClient.mUseCache);
     }
