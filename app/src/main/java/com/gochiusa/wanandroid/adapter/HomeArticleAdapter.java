@@ -1,15 +1,18 @@
 package com.gochiusa.wanandroid.adapter;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.gochiusa.wanandroid.R;
 import com.gochiusa.wanandroid.entity.Article;
+import com.gochiusa.wanandroid.tasks.web.WebViewActivity;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,26 +37,22 @@ public class HomeArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
      * 尾布局
      */
     private View mFootView;
+    private Context mContext;
 
-    public HomeArticleAdapter(List<Article> articleList) {
+
+
+    public HomeArticleAdapter(@Nullable Context context, List<Article> articleList) {
         mArticleList = articleList;
+        mContext = context;
     }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == CONTENT_TYPE) {
-            // 创建普通的子项
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(
-                    R.layout.item_main_home_page, parent, false);
-            // 使用子项创建ViewHolder，子项已经封装在其中
-            return new ContentViewHolder(itemView);
+            return createContentView(parent);
         } else {
-            // 创建尾布局
-            mFootView = LayoutInflater.from(parent.getContext()).inflate(
-            R.layout.item_list_footer_view, parent, false);
-            // 默认隐藏尾布局
-            mFootView.setVisibility(View.INVISIBLE);
-            return new FootViewHolder(mFootView);
+            return createFootView(parent);
         }
     }
 
@@ -111,6 +110,40 @@ public class HomeArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void removeAll() {
         mArticleList.clear();
         notifyDataSetChanged();
+    }
+
+    /**
+     * 辅助方法，生成普通的内容子项
+     */
+    private ContentViewHolder createContentView(ViewGroup parent) {
+        // 创建普通的子项
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(
+                R.layout.item_main_home_page, parent, false);
+        // 创建ViewHolder
+        ContentViewHolder viewHolder =  new ContentViewHolder(itemView);
+        // 设置子项点击事件
+        itemView.setOnClickListener((view) -> {
+            // 仅当context不为null时进行跳转
+            if (mContext != null) {
+                Article article = mArticleList.get(viewHolder.getAdapterPosition());
+                WebViewActivity.startThisActivity(mContext, article.getLink());
+            }
+        });
+        // 使用子项创建ViewHolder，子项已经封装在其中
+        return viewHolder;
+    }
+
+    /**
+     *  辅助方法，生成尾布局
+     * @return 尾布局的ViewHolder
+     */
+    private FootViewHolder createFootView(ViewGroup parent) {
+        // 创建尾布局
+        mFootView = LayoutInflater.from(parent.getContext()).inflate(
+                R.layout.item_list_footer_view, parent, false);
+        // 默认隐藏尾布局
+        mFootView.setVisibility(View.INVISIBLE);
+        return new FootViewHolder(mFootView);
     }
 
     /**

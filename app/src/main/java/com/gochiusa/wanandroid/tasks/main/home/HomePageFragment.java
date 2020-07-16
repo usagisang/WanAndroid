@@ -68,7 +68,7 @@ public class HomePageFragment extends BaseFragment<HomePageContract.HomePresente
         recyclerView.setLayoutManager(new LinearLayoutManager(
                 MyApplication.getContext()));
         // 初始化适配器
-        mArticleAdapter = new HomeArticleAdapter(new ArrayList<>());
+        mArticleAdapter = new HomeArticleAdapter(getContext(), new ArrayList<>());
         recyclerView.setAdapter(mArticleAdapter);
         // 为recyclerView添加滚动的监听器
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
