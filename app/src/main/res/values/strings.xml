@@ -2,4 +2,5 @@
     <string name="app_name">玩Android</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="main_search">搜索</string>
+    <string name="web_open_in_browser">在浏览器内打开</string>
 </resources>
