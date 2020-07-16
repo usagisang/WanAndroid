@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
@@ -76,8 +77,13 @@ public class WebViewActivity extends AppCompatActivity {
      *  设置WebView
      */
     private void initWebView(WebView webView) {
+        WebSettings webSettings = webView.getSettings();
+        // 允许JavaScript直接打开窗口
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
         // 允许JavaScript内容
-        webView.getSettings().setJavaScriptEnabled(true);
+        webSettings.setJavaScriptEnabled(true);
+        // WebView的缓存模式为优先使用本地缓存
+        webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         // 新的网页仍在这个WebView打开
         webView.setWebViewClient(new WebViewClient());
 
@@ -108,14 +114,38 @@ public class WebViewActivity extends AppCompatActivity {
 
     }
 
+    /**
+     *  辅助方法，跳转至系统浏览器打开网页
+     */
+    private void openInBrowser() {
+        // 使用隐式Intent打开其他的浏览器
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        String url = mWebView.getUrl();
+        if (url.startsWith("https://")) {
+            intent.setData(Uri.parse(mWebView.getUrl()));
+        } else {
+            // 如果URL被重定向为打开具体应用的URL，则使用原始的URL尝试打开页面
+            intent.setData(Uri.parse(sFirstURL));
+        }
+        startActivity(intent);
+    }
+
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // 重写Activity按下返回键的处理，使得WebView的网页可以后退
         if ((keyCode == KEYCODE_BACK) && mWebView.canGoBack()) {
             mWebView.goBack();
             return true;
+        } else {
+            // 清除WebView留下的缓存，这会清除应用所使用的所有WebView的缓存
+            mWebView.clearCache(true);
+            // 清除当前WebView访问的历史记录
+            mWebView.clearHistory();
+            // 清除WebView自动完成填充的表单数据
+            mWebView.clearFormData();
+            return super.onKeyDown(keyCode, event);
         }
-        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -131,13 +161,12 @@ public class WebViewActivity extends AppCompatActivity {
             // 如果点击返回按钮，结束这个Activity
             case android.R.id.home : {
                 finish();
+                break;
             }
             // 如果点击在浏览器内打开的按钮
             case R.id.menu_web_toolbar_action_open : {
-                // 使用隐式Intent打开其他的浏览器
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(mWebView.getUrl()));
-                startActivity(intent);
+                openInBrowser();
+                break;
             }
         }
         return true;
