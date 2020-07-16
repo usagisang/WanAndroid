@@ -1,7 +1,10 @@
 package com.gochiusa.wanandroid.util;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -50,14 +53,29 @@ public final class ActivityUtil {
     public static void closeApplication(Context context) {
         ActivityManager activityManager = (ActivityManager)
                 context.getSystemService(Context.ACTIVITY_SERVICE);
-        // 获取任务栈
-        List<ActivityManager.AppTask> appTaskList = activityManager.getAppTasks();
+        if (activityManager != null) {
+            // 获取任务栈
+            List<ActivityManager.AppTask> appTaskList = activityManager.getAppTasks();
 
-        // 逐个关闭Activity
-        for (ActivityManager.AppTask appTask : appTaskList) {
-            appTask.finishAndRemoveTask();
+            // 逐个关闭Activity
+            for (ActivityManager.AppTask appTask : appTaskList) {
+                appTask.finishAndRemoveTask();
+            }
+            // 结束进程
+            System.exit(0);
         }
-        // 结束进程
-        System.exit(0);
+    }
+
+    /**
+     *  设置状态栏显示的颜色
+     * @param activity 正在任务栈顶层显示的Activity
+     * @param colorId 来自资源文件（R文件）的颜色id
+     */
+    public static void setWindowStatusBarColor(Activity activity, int colorId) {
+        Window window = activity.getWindow();
+        // 添加Flag把状态栏设置为可绘制状态
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        // 使用ColorId获取Color，并设置到状态栏上
+        window.setStatusBarColor(activity.getResources().getColor(colorId));
     }
 }

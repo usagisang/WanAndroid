@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.gochiusa.wanandroid.R;
+import com.gochiusa.wanandroid.util.ActivityUtil;
 
 import static android.view.KeyEvent.KEYCODE_BACK;
 
@@ -67,10 +68,12 @@ public class WebViewActivity extends AppCompatActivity {
      */
     private void initToolbar(Toolbar toolbar) {
         setSupportActionBar(toolbar);
-        // 设置打开返回功能
+        // 打开返回的按钮
         if (getSupportActionBar() != null) {
             getSupportActionBar().setHomeButtonEnabled(true);
         }
+        // 设置状态栏的颜色
+        ActivityUtil.setWindowStatusBarColor(this, R.color.colorPrimary);
     }
 
     /**

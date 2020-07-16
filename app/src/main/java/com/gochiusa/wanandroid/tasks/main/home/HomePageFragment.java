@@ -101,7 +101,7 @@ public class HomePageFragment extends BaseFragment<HomePageContract.HomePresente
      */
     @Override
     public void hideLoading() {
-        mArticleAdapter.getFootView().setVisibility(View.INVISIBLE);
+        mArticleAdapter.getFootView().setVisibility(View.GONE);
     }
 
     @Override
@@ -125,16 +125,6 @@ public class HomePageFragment extends BaseFragment<HomePageContract.HomePresente
     }
 
 
-    /**
-     * 单例模式
-     */
-    private static final class GetHomePageFragment {
-        private static final HomePageFragment HOME_PAGE_FRAGMENT = new HomePageFragment();
-    }
-    private HomePageFragment() {}
-
-    public static HomePageFragment newInstance() {
-        return GetHomePageFragment.HOME_PAGE_FRAGMENT;
-    }
+    public HomePageFragment() {}
 
 }

@@ -12,6 +12,7 @@ import android.view.MenuItem;
 
 import com.gochiusa.wanandroid.R;
 import com.gochiusa.wanandroid.tasks.main.home.HomePageFragment;
+import com.gochiusa.wanandroid.util.ActivityUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,6 +25,11 @@ public class MainActivity extends AppCompatActivity {
      *  当前在最上层显示的碎片
      */
     private Fragment mNowShowFragment;
+
+    /**
+     *
+     */
+    private Fragment mHomePageFragment;
 
     /**
      *  标题栏
@@ -40,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initChildView();
-        initHomePageFragment();
+        initFirstFragment();
     }
 
 
@@ -50,7 +56,10 @@ public class MainActivity extends AppCompatActivity {
     private void initChildView() {
         // 初始化Toolbar并设置
         mToolbar =  findViewById(R.id.tb_main);
+        mHomePageFragment = new HomePageFragment();
         setSupportActionBar(mToolbar);
+        // 设置状态栏的颜色
+        ActivityUtil.setWindowStatusBarColor(this, R.color.colorPrimary);
         // 初始化底部导航栏
         mBottomNavigationView = findViewById(R.id.bnv_main);
     }
@@ -58,11 +67,11 @@ public class MainActivity extends AppCompatActivity {
     /**
      * 辅助方法，第一次开启APP时，初始化显示的碎片Fragment
      */
-    private void initHomePageFragment() {
+    private void initFirstFragment() {
         // 初始化碎片管理器
         mFragmentManager = getSupportFragmentManager();
         // 第一次打开显示的碎片一般是首页
-        mNowShowFragment = HomePageFragment.newInstance();
+        mNowShowFragment = mHomePageFragment;
         // 使用碎片管理器显示碎片
         mFragmentManager.beginTransaction().
                 add(R.id.fl_main_content, mNowShowFragment).commit();
