@@ -3,6 +3,8 @@ package com.gochiusa.wanandroid.tasks.main.home;
 import android.os.Handler;
 import android.os.Message;
 
+import androidx.annotation.Nullable;
+
 import com.gochiusa.wanandroid.base.RequestCallback;
 import com.gochiusa.wanandroid.base.model.SingleThreadModel;
 import com.gochiusa.wanandroid.entity.Article;
@@ -30,14 +32,9 @@ public class HomePageModel extends SingleThreadModel implements HomePageContract
      */
     public static final String NOT_MORE_TIP = "到达了尽头惹";
     /**
-     *   加载中出现错误的提示信息
+     *   网络加载中出现错误的提示信息
      */
-    public static final String ERROR_MESSAGE = "数据加载失败！";
-
-    /**
-     *  到达列表尽头的返回码
-     */
-    static final int REQUEST_NOT_MORE = 10088;
+    public static final String ERROR_MESSAGE = "网络数据加载失败！";
 
     /**
      *  缓存文章请求结果的变量
@@ -52,41 +49,20 @@ public class HomePageModel extends SingleThreadModel implements HomePageContract
 
     @Override
     public void loadNewArticle(RequestCallback<List<Article>, String> callback) {
-        Runnable runnable = () -> {
-            Message message = Message.obtain();
-            // 不使用建造者，直接创建，使用默认的连接设置
-            HttpClient httpClient = new HttpClient();
-            Request.Builder requestBuilder = new Request.Builder();
-            // 默认请求第0页的数据
-            requestBuilder.setUrl(CreateURLToRequest.createHomeArticleURL(0));
-            // 配置剩余的请求信息
-            Request newArticleRequest = requestBuilder.get().build();
-            // 创建Call
-            Call call = httpClient.newCall(newArticleRequest);
-            try {
-                // 尝试同步获取响应
-                Response response = call.execute();
-                // 解析JSON数据
-                mCacheList = JSONPause.getArticles(response.getResponseBody(), mOffsetCalculator);
-                // 缓存接口
-                message.obj = callback;
-                // 将Message标记为请求成功
-                message.what = REQUEST_SUCCESS;
-            } catch (IOException | JSONException e) {
-                // 将Message标记为请求失败
-                message.what = REQUEST_ERROR;
-                e.printStackTrace();
-            } finally {
-                // 无论请求成功或失败都会发送Message
-                getMainHandler().sendMessage(message);
-            }
-        };
         // 开启线程执行任务
-        getThreadPool().submit(runnable);
+        getThreadPool().submit(createLoadArticleTask(callback, 0, mOffsetCalculator));
     }
 
     @Override
     public void loadMoreArticle(RequestCallback<List<Article>, String> callback) {
+        if (mOffsetCalculator.increaseOffset()) {
+            // 如果成功递增偏移量
+            getThreadPool().submit(createLoadArticleTask(callback,
+                    mOffsetCalculator.getPage(), null));
+        } else {
+            // 如果递增偏移量失败
+            callback.onFailure(NOT_MORE_TIP);
+        }
     }
 
     private Handler.Callback getHandlerCallback() {
@@ -101,10 +77,6 @@ public class HomePageModel extends SingleThreadModel implements HomePageContract
                         callback.onResponse(mCacheList);
                         break;
                     }
-                    case REQUEST_NOT_MORE : {
-                        callback.onFailure(NOT_MORE_TIP);
-                        break;
-                    }
                     case REQUEST_ERROR : {
                         callback.onFailure(ERROR_MESSAGE);
                         break;
@@ -112,6 +84,45 @@ public class HomePageModel extends SingleThreadModel implements HomePageContract
                 }
             }
             return true;
+        };
+    }
+
+    /**
+     *   生成可执行任务，用于开启线程加载文章
+     * @param callback 加载完毕后需要回调的接口
+     * @param page 想要请求第几页的数据
+     * @param calculator 偏移量计算器。一般而言只需要在刷新的时候刷新偏移量，其他时刻可以传入null
+     */
+    private Runnable createLoadArticleTask(RequestCallback<List<Article>, String> callback,
+                                           int page, @Nullable OffsetCalculator calculator) {
+        return () -> {
+            Message message = Message.obtain();
+            // 不使用建造者，直接创建，使用默认的连接设置
+            HttpClient httpClient = new HttpClient();
+            Request.Builder requestBuilder = new Request.Builder();
+            // 生成请求URL，设置在请求中
+            requestBuilder.setUrl(CreateURLToRequest.createHomeArticleURL(page));
+            // 配置剩余的请求信息
+            Request newArticleRequest = requestBuilder.get().build();
+            // 创建Call
+            Call call = httpClient.newCall(newArticleRequest);
+            try {
+                // 尝试同步获取响应
+                Response response = call.execute();
+                // 解析JSON数据
+                mCacheList = JSONPause.getArticles(response.getResponseBody(), calculator);
+                // 缓存接口
+                message.obj = callback;
+                // 将Message标记为请求成功
+                message.what = REQUEST_SUCCESS;
+            } catch (IOException | JSONException e) {
+                // 将Message标记为请求失败
+                message.what = REQUEST_ERROR;
+                e.printStackTrace();
+            } finally {
+                // 无论请求成功或失败都会发送Message
+                getMainHandler().sendMessage(message);
+            }
         };
     }
 }
