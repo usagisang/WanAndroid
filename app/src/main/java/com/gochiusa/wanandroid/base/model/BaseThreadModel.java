@@ -37,7 +37,7 @@ public abstract class BaseThreadModel implements BaseModel {
     /**
      *  初始化主线程的Handler
      */
-    public void initMainModel(Handler.Callback callback) {
+    public void initMainHandler(Handler.Callback callback) {
         mMainHandler = new Handler(Looper.getMainLooper(), callback);
     }
 

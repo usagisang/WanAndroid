@@ -37,6 +37,7 @@ public final class Request {
 
         public Builder() {
             mRequest = new Request();
+            mRequest.mHeaders = new Headers();
         }
 
         public Builder post(RequestBody requestBody) {
@@ -58,9 +59,6 @@ public final class Request {
          * 添加请求头
          */
         public Builder addHeader(String name, String value) {
-            if (mRequest.mHeaders == null) {
-                mRequest.mHeaders = new Headers();
-            }
             mRequest.mHeaders.setHeader(name, value);
             return this;
         }

@@ -45,11 +45,11 @@ public final class OffsetCalculator {
      */
     public boolean increaseOffset() {
         offset += pageLimit;
-        if (offset > totalCount) {
+        if (offset < totalCount) {
+            return true;
+        } else {
             offset = totalCount;
             return false;
-        } else {
-            return true;
         }
     }
 

@@ -48,8 +48,11 @@ public class HomeArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             // 使用子项创建ViewHolder，子项已经封装在其中
             return new ContentViewHolder(itemView);
         } else {
+            // 创建尾布局
             mFootView = LayoutInflater.from(parent.getContext()).inflate(
             R.layout.item_list_footer_view, parent, false);
+            // 默认隐藏尾布局
+            mFootView.setVisibility(View.INVISIBLE);
             return new FootViewHolder(mFootView);
         }
     }

@@ -51,15 +51,10 @@ public class HomePageFragment extends BaseFragment<HomePageContract.HomePresente
     private void initChildView(View parentView) {
         mRecyclerView = parentView.findViewById(R.id.rv_main);
         mSwipeRefreshLayout = parentView.findViewById(R.id.swipe_refresh);
+        // 对RecyclerView进行配置
         initRecyclerView(mRecyclerView);
         // 设置SwipeRefreshLayout刷新时触发的操作
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                // 向Presenter请求刷新数据
-                getPresenter().refresh();
-            }
-        });
+        mSwipeRefreshLayout.setOnRefreshListener(() -> getPresenter().refresh());
     }
 
     /**
@@ -73,7 +68,7 @@ public class HomePageFragment extends BaseFragment<HomePageContract.HomePresente
         recyclerView.setLayoutManager(new LinearLayoutManager(
                 MyApplication.getContext()));
         // 初始化适配器
-        mArticleAdapter = new HomeArticleAdapter(new ArrayList<Article>());
+        mArticleAdapter = new HomeArticleAdapter(new ArrayList<>());
         recyclerView.setAdapter(mArticleAdapter);
         // 为recyclerView添加滚动的监听器
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
