@@ -36,7 +36,8 @@ public final class JSONPause {
             article.setTitle(eachObject.getString("title"));
             article.setNiceDate(eachObject.getString("niceDate"));
             article.setSuperChapterName(eachObject.getString("superChapterName"));
-            article.setChapterName("chapterName");
+            article.setChapterName(eachObject.getString("chapterName"));
+            article.setLink(eachObject.getString("link"));
             article.setAuthor(eachObject.getString("author"));
             articles.add(article);
         }
