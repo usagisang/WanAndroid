@@ -1,6 +1,6 @@
 package com.gochiusa.wanandroid.util;
 
-import static com.gochiusa.wanandroid.util.DomainAPINormalValue.*;
+import static com.gochiusa.wanandroid.util.DomainAPIConstant.*;
 public final class CreateURLToRequest {
 
     /**
