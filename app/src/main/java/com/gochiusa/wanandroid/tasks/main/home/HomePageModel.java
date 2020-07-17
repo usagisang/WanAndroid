@@ -97,6 +97,8 @@ public class HomePageModel extends SingleThreadModel implements HomePageContract
                                            int page, @Nullable OffsetCalculator calculator) {
         return () -> {
             Message message = Message.obtain();
+            // 缓存接口
+            message.obj = callback;
             // 不使用建造者，直接创建，使用默认的连接设置
             HttpClient httpClient = new HttpClient();
             Request.Builder requestBuilder = new Request.Builder();
@@ -111,8 +113,6 @@ public class HomePageModel extends SingleThreadModel implements HomePageContract
                 Response response = call.execute();
                 // 解析JSON数据
                 mCacheList = JSONPause.getArticles(response.getResponseBody(), calculator);
-                // 缓存接口
-                message.obj = callback;
                 // 将Message标记为请求成功
                 message.what = REQUEST_SUCCESS;
             } catch (IOException | JSONException e) {
