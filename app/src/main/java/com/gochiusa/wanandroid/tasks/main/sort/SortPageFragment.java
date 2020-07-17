@@ -1,4 +1,4 @@
-package com.gochiusa.wanandroid.tasks.main.home;
+package com.gochiusa.wanandroid.tasks.main.sort;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,34 +13,30 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.gochiusa.wanandroid.R;
-import com.gochiusa.wanandroid.adapter.ArticleAdapter;
+import com.gochiusa.wanandroid.adapter.TreeAdapter;
 import com.gochiusa.wanandroid.base.view.BaseFragment;
-import com.gochiusa.wanandroid.entity.Article;
+import com.gochiusa.wanandroid.entity.Tree;
 import com.gochiusa.wanandroid.util.ActivityUtil;
 import com.gochiusa.wanandroid.util.MyApplication;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
-public class HomePageFragment extends BaseFragment<HomePageContract.HomePresenter>
-        implements HomePageContract.HomeView {
+
+public class SortPageFragment extends BaseFragment<SortPageContract.SortPresenter>
+        implements SortPageContract.SortView {
 
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private ArticleAdapter mArticleAdapter;
-
-    @Override
-    protected HomePageContract.HomePresenter onBindPresenter() {
-        return new HomePagePresenter(this);
-    }
+    private TreeAdapter mTreeAdapter;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.layout_recycler_view, container,false);
         initChildView(view);
-        // 向Presenter请求数据（刷新操作）
+        // 向Presenter请求数据
         getPresenter().refresh();
         return view;
     }
@@ -68,40 +64,8 @@ public class HomePageFragment extends BaseFragment<HomePageContract.HomePresente
         recyclerView.setLayoutManager(new LinearLayoutManager(
                 MyApplication.getContext()));
         // 初始化适配器
-        mArticleAdapter = new ArticleAdapter(getContext(), new ArrayList<>());
-        recyclerView.setAdapter(mArticleAdapter);
-        // 为recyclerView添加滚动的监听器
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (! recyclerView.canScrollVertically(1)) {
-                    // 如果滑动到底部
-                    getPresenter().showMore();
-                }
-            }
-        });
-    }
-
-    @Override
-    public void addArticlesToList(Collection<? extends Article> collection) {
-        mArticleAdapter.addAll(collection);
-    }
-
-    /**
-     *  显示尾布局
-     */
-    @Override
-    public void showLoading() {
-        mArticleAdapter.showFootView();
-    }
-
-    /**
-     * 隐藏尾布局
-     */
-    @Override
-    public void hideLoading() {
-        mArticleAdapter.hideFootView();
+        mTreeAdapter = new TreeAdapter(getContext(), new ArrayList<>());
+        recyclerView.setAdapter(mTreeAdapter);
     }
 
     @Override
@@ -120,11 +84,13 @@ public class HomePageFragment extends BaseFragment<HomePageContract.HomePresente
     }
 
     @Override
-    public void removeAllArticle() {
-        mArticleAdapter.clear();
+    public void replaceAll(List<Tree> trees) {
+        mTreeAdapter.clear();
+        mTreeAdapter.addAll(trees);
     }
 
-
-    public HomePageFragment() {}
-
+    @Override
+    protected SortPageContract.SortPresenter onBindPresenter() {
+        return new SortPagePresenter(this);
+    }
 }

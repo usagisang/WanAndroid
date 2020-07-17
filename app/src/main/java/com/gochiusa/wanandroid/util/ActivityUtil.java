@@ -14,33 +14,18 @@ import androidx.fragment.app.FragmentTransaction;
 import java.util.List;
 
 public final class ActivityUtil {
-    public static void replaceFragment(FragmentManager fragmentManager,
-                                       Fragment newFragment, Fragment oldFragment, int frameId) {
-        replaceFragment(fragmentManager, newFragment, oldFragment, frameId, null);
-    }
 
     /**
-     *  使用另外的碎片，替换正在显示的碎片。使用这个方法添加的碎片不会被加入返回栈
+     *  隐藏正在显示的碎片，然后显示另一个碎片。
+     *  需要显示的碎片必须已经添加到{@code FragmentManager}中
      * @param fragmentManager 碎片管理器
-     * @param newFragment 需要显示在最上层的碎片
-     * @param oldFragment 需要隐藏的正在显示的碎片
-     * @param frameId 显示碎片的控件id
-     * @param tag 为新添加的碎片指定的Tag标识
+     * @param showFragment 需要显示在最上层的碎片，必须已经被添加
+     * @param hideFragment 需要隐藏的正在显示的碎片
      */
-    public static void replaceFragment(FragmentManager fragmentManager, Fragment newFragment,
-                                       Fragment oldFragment, int frameId, String tag) {
+    public static void hideFragmentWithShow(FragmentManager fragmentManager, Fragment showFragment,
+                                            Fragment hideFragment) {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        if (tag != null) {
-            // 添加碎片，并为这个碎片指定一个tag
-            transaction.add(frameId, newFragment, tag);
-        } else {
-            // 添加碎片，但不指定tag
-            transaction.add(frameId, newFragment);
-        }
-        // 隐藏当前顶部显示的碎片
-        transaction.hide(oldFragment);
-        transaction.commit();
-
+        transaction.hide(hideFragment).show(showFragment).commit();
     }
 
     public static void showToast(String message, Context context) {

@@ -13,7 +13,6 @@ import com.gochiusa.wanandroid.util.JSONPause;
 import com.gochiusa.wanandroid.util.OffsetCalculator;
 import com.gochiusa.wanandroid.util.http.Call;
 import com.gochiusa.wanandroid.util.http.HttpClient;
-import com.gochiusa.wanandroid.util.http.Request;
 import com.gochiusa.wanandroid.util.http.Response;
 
 import org.json.JSONException;
@@ -99,15 +98,9 @@ public class HomePageModel extends SingleThreadModel implements HomePageContract
             Message message = Message.obtain();
             // 缓存接口
             message.obj = callback;
-            // 不使用建造者，直接创建，使用默认的连接设置
-            HttpClient httpClient = new HttpClient();
-            Request.Builder requestBuilder = new Request.Builder();
-            // 生成请求URL，设置在请求中
-            requestBuilder.setUrl(CreateURLToRequest.createHomeArticleURL(page));
-            // 配置剩余的请求信息
-            Request newArticleRequest = requestBuilder.get().build();
             // 创建Call
-            Call call = httpClient.newCall(newArticleRequest);
+            Call call = HttpClient.createDefaultCall(
+                    CreateURLToRequest.createHomeArticleURL(page));
             try {
                 // 尝试同步获取响应
                 Response response = call.execute();

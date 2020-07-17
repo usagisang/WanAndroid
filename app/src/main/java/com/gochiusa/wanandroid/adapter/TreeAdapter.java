@@ -17,7 +17,7 @@ import java.util.List;
 public class TreeAdapter extends ListAdapter<Tree, TreeAdapter.TreeViewHolder> {
 
     private Context mContext;
-    private String DIVISION = " ";
+    private String DIVISION = "  ";
 
     public TreeAdapter(Context context, List<Tree> list) {
         super(list);
