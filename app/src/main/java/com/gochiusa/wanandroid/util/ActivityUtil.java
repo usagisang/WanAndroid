@@ -14,9 +14,9 @@ import androidx.fragment.app.FragmentTransaction;
 import java.util.List;
 
 public final class ActivityUtil {
-    public static void addFragmentToActivity(FragmentManager fragmentManager,
-                                             Fragment newFragment, Fragment oldFragment, int frameId) {
-        addFragmentToActivity(fragmentManager, newFragment, oldFragment, frameId, null);
+    public static void replaceFragment(FragmentManager fragmentManager,
+                                       Fragment newFragment, Fragment oldFragment, int frameId) {
+        replaceFragment(fragmentManager, newFragment, oldFragment, frameId, null);
     }
 
     /**
@@ -27,8 +27,8 @@ public final class ActivityUtil {
      * @param frameId 显示碎片的控件id
      * @param tag 为新添加的碎片指定的Tag标识
      */
-    public static void addFragmentToActivity(FragmentManager fragmentManager, Fragment newFragment,
-                                             Fragment oldFragment, int frameId, String tag) {
+    public static void replaceFragment(FragmentManager fragmentManager, Fragment newFragment,
+                                       Fragment oldFragment, int frameId, String tag) {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         if (tag != null) {
             // 添加碎片，并为这个碎片指定一个tag
