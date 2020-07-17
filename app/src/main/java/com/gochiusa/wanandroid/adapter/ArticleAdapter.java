@@ -14,14 +14,12 @@ import com.gochiusa.wanandroid.R;
 import com.gochiusa.wanandroid.entity.Article;
 import com.gochiusa.wanandroid.tasks.web.WebViewActivity;
 
-import java.util.Collection;
 import java.util.List;
 
 
-public class HomeArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ArticleAdapter extends ListAdapter<Article, RecyclerView.ViewHolder> {
 
-    private List<Article> mArticleList;
-    private String mDivision = "/";
+    private static final String DIVISION = "/";
 
     /**
      *  子View的类型为内容类型
@@ -37,12 +35,14 @@ public class HomeArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
      * 尾布局
      */
     private View mFootView;
+    /**
+     * 上下文
+     */
     private Context mContext;
 
 
-
-    public HomeArticleAdapter(@Nullable Context context, List<Article> articleList) {
-        mArticleList = articleList;
+    public ArticleAdapter(@Nullable Context context, List<Article> articleList) {
+        super(articleList);
         mContext = context;
     }
 
@@ -62,54 +62,37 @@ public class HomeArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             // 强制类型转换
             ContentViewHolder contentViewHolder = (ContentViewHolder) holder;
             // 获取数据
-            Article article = mArticleList.get(position);
+            Article article = getItem(position);
             // 将数据展示在每个子项的控件上
             contentViewHolder.authorView.setText(article.getAuthor());
             contentViewHolder.timeView.setText(article.getNiceDate());
             contentViewHolder.titleView.setText(article.getTitle());
             // 拼接类别的字符串
             contentViewHolder.typeView.setText(String.format("%s%s%s",
-                    article.getSuperChapterName(), mDivision, article.getChapterName()));
+                    article.getSuperChapterName(), DIVISION, article.getChapterName()));
         }
     }
 
     @Override
     public int getItemCount() {
-        return mArticleList.size() + 1;
+        return getListItemCount() + 1;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == mArticleList.size()) {
+        if (position == getListItemCount()) {
             return FOOT_TYPE;
         } else {
             return CONTENT_TYPE;
         }
     }
 
-    /**
-     * 获取尾布局
-     * @return 列表末端的尾布局
-     */
-    public View getFootView() {
-        return mFootView;
+    public void hideFootView() {
+        mFootView.setVisibility(View.GONE);
     }
 
-    /**
-     * 将外部集合的数据添加到数据源中，并且通知数据源更新
-     * @param collection 需要添加的数据的集合
-     */
-    public void addAll(Collection<? extends Article> collection) {
-        mArticleList.addAll(collection);
-        notifyDataSetChanged();
-    }
-
-    /**
-     * 移除数据源中所有的数据
-     */
-    public void removeAll() {
-        mArticleList.clear();
-        notifyDataSetChanged();
+    public void showFootView() {
+        mFootView.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -125,7 +108,7 @@ public class HomeArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         itemView.setOnClickListener((view) -> {
             // 仅当context不为null时进行跳转
             if (mContext != null) {
-                Article article = mArticleList.get(viewHolder.getAdapterPosition());
+                Article article = getItem(viewHolder.getAdapterPosition());
                 WebViewActivity.startThisActivity(mContext, article.getLink());
             }
         });
