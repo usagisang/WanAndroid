@@ -7,4 +7,5 @@ public final class DomainAPIConstant {
     static final String DOMAIN_URL = "https://www.wanandroid.com/";
     static final String HOME_ARTICLE_API = "article/list/";
     static final String DATA_FORMAT = "/json";
+    static final String TREE_API = "tree";
 }

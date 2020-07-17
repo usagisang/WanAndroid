@@ -11,4 +11,11 @@ public final class CreateURLToRequest {
     public static String createHomeArticleURL(int page) {
         return DOMAIN_URL + HOME_ARTICLE_API + page + DATA_FORMAT;
     }
+
+    /**
+     *  生成获取体系的数据的URL
+     */
+    public static String createTreeURL() {
+        return DOMAIN_URL + TREE_API + DATA_FORMAT;
+    }
 }
