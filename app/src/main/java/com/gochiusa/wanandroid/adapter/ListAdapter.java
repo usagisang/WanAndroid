@@ -4,7 +4,6 @@ package com.gochiusa.wanandroid.adapter;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.Collection;
 import java.util.List;
 
 
@@ -29,29 +28,43 @@ public abstract class ListAdapter<T, V extends RecyclerView.ViewHolder>
 
     public void clear() {
         synchronized (mLock) {
+            int size = getItemCount();
             mList.clear();
-            notifyDataSetChanged();
+            if (size != 0) {
+                notifyItemRangeRemoved(0, size);
+            }
         }
     }
 
-    public void addAll(@NonNull Collection<? extends T> collection) {
+    public void addAll(@NonNull List<T> newList) {
         synchronized (mLock) {
-            mList.addAll(collection);
-            notifyDataSetChanged();
+            int originSize = getItemCount();
+            if (mList.addAll(newList)) {
+                // 如果addAll添加成功，通知刷新
+                // （在ArrayList中，其实是做了一个加入的Collection长度是否为0的判断）
+                notifyItemRangeInserted(originSize, newList.size());
+            }
         }
     }
 
     public void add(T object) {
         synchronized (mLock) {
             mList.add(object);
-            notifyDataSetChanged();
+            // 通知View，最新的项目插入到列表最后一位
+            notifyItemInserted(getItemCount() -1);
         }
     }
 
     public void remove(T object) {
         synchronized (mLock) {
-            mList.remove(object);
-            notifyDataSetChanged();
+            // 获取移除的位置
+            int position = getPosition(object);
+            if (mList.remove(object)) {
+                // 如果移除成功，则先通知子项已经被删除
+                notifyItemRemoved(position);
+                // 然后从被移除的位置开始通知，刷新后续子项的位置position，使之不错位
+                notifyItemRangeChanged(position, getListItemCount() - position);
+            }
         }
     }
 
