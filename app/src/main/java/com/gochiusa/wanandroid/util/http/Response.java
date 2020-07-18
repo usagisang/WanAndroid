@@ -2,6 +2,8 @@ package com.gochiusa.wanandroid.util.http;
 
 import androidx.annotation.Nullable;
 
+import java.io.ByteArrayOutputStream;
+
 public final class Response {
 
     /**
@@ -30,9 +32,10 @@ public final class Response {
     final Headers responseHeader;
 
     /**
-     *  响应体，目前只采用字符串形式保存
+     *  响应体，使用{@code ByteArrayOutputStream}的形式储存。
+     *  可以兼容获取图片响应与获取String字符串响应的需求。
      */
-    final String responseBody;
+    final ByteArrayOutputStream responseBody;
 
     private Response(Builder builder) {
         this.code = builder.mCode;
@@ -60,7 +63,11 @@ public final class Response {
         return message;
     }
 
-    public String getResponseBody() {
+    public String getResponseBodyString() {
+        return responseBody.toString();
+    }
+
+    public ByteArrayOutputStream getResponseBody() {
         return responseBody;
     }
 
@@ -72,7 +79,7 @@ public final class Response {
         private int mCode = -1;
         private String mMessage;
         private Headers mHeader;
-        private String mResponseBody;
+        private ByteArrayOutputStream mResponseBody;
 
         public Builder() {
             mHeader = new Headers();
@@ -98,7 +105,7 @@ public final class Response {
             return this;
         }
 
-        public Builder setResponseBody(String responseBody) {
+        public Builder setResponseBody(ByteArrayOutputStream responseBody) {
             mResponseBody = responseBody;
             return this;
         }

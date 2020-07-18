@@ -46,7 +46,7 @@ public class SortPageModel extends SingleThreadModel implements SortPageContract
                 // 尝试同步获取响应
                 Response response = call.execute();
                 // 解析JSON数据
-                mCacheList = JSONPause.getTrees(response.getResponseBody());
+                mCacheList = JSONPause.getTrees(response.getResponseBodyString());
                 // 将Message标记为请求成功
                 message.what = REQUEST_SUCCESS;
             } catch (IOException | JSONException e) {

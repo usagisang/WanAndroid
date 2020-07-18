@@ -1,10 +1,9 @@
 package com.gochiusa.wanandroid.util.http;
 
 
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import java.net.HttpURLConnection;
@@ -123,27 +122,28 @@ public final class RealCall implements Call {
                 .addResponseHeader(Response.CONTENT_TYPE, urlConnection.getContentType())
                 .addResponseHeader(Response.CONTENT_ENCODING, urlConnection.getContentEncoding())
                 .setResponseBody(buildResponseBody(urlConnection.getInputStream()));
+        urlConnection.disconnect();
         return builder.build();
     }
 
 
     /**
-     *   将输入流包含的数据拼接成字符串
+     *   将输入流包含的数据转移到输出流{@code ByteArrayOutputSteam}
      * @param inputStream 储存响应信息的输入流
-     * @return 单个字符串
+     * @return 写入服务器响应信息的{@code ByteArrayOutputSteam}
      * @throws IOException 读取数据可能出现异常
      */
-    private static String buildResponseBody(InputStream inputStream) throws IOException {
-        // 读取服务器的输出
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(inputStream));
-        // 缓存每一行数据的变量
-        String line;
-        StringBuilder stringBuilder = new StringBuilder();
-        // 遍历每一行并拼接
-        while ((line = reader.readLine()) != null) {
-            stringBuilder.append(line);
+    private static ByteArrayOutputStream buildResponseBody(InputStream inputStream)
+            throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        // 缓存读取的字节数大小
+        int byteCount;
+        // 用作缓存区的字节数组
+        byte[] bytes = new byte[1024];
+        // 写入数据
+        while ((byteCount = inputStream.read(bytes)) > 0) {
+            byteArrayOutputStream.write(bytes, 0, byteCount);
         }
-        return stringBuilder.toString();
+        return byteArrayOutputStream;
     }
 }
