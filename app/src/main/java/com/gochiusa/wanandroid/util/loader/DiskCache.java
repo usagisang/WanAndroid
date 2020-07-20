@@ -82,12 +82,22 @@ public class DiskCache implements Cache {
         return MAX_SIZE;
     }
 
+    /**
+     *  清除磁盘缓存信息并关闭磁盘缓存
+     */
     @Override
     public void clear() {
         try {
             mDiskLruCache.delete();
+            mDiskLruCache.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    /**
+     *  不实现这个方法
+     */
+    @Override
+    public void setOnRemoveListener(MemoryCache.OnRemoveListener listener) {}
 }

@@ -27,4 +27,13 @@ public interface Cache {
      * 清除缓存里的所有数据
      * */
     void clear();
+
+    /**
+     *  设置当数据按照Lru算法需要淘汰时的监听器
+     */
+    void setOnRemoveListener(MemoryCache.OnRemoveListener listener);
+
+    interface OnRemoveListener {
+        void onRemove(String key, Bitmap bitmap);
+    }
 }

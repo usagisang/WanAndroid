@@ -80,17 +80,18 @@ public class MemoryCache implements Cache {
                 size -= Utils.calculateBitmapSize(value);
                 // 如果Listener不为空，并且是自然的淘汰操作，非清空操作，则调用接口
                 if (listener != null && requireSize == maxSize) {
-                    listener.onRemove(value);
+                    listener.onRemove(key, value);
                 }
             }
         }
     }
 
+    @Override
     public void setOnRemoveListener(OnRemoveListener listener) {
         this.listener = listener;
     }
 
     public interface OnRemoveListener {
-        void onRemove(Bitmap bitmap);
+        void onRemove(String key, Bitmap bitmap);
     }
 }
