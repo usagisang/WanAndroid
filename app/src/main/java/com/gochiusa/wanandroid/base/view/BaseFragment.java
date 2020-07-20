@@ -5,6 +5,7 @@ import android.app.Activity;
 import androidx.fragment.app.Fragment;
 
 import com.gochiusa.wanandroid.base.presenter.BasePresenter;
+import com.gochiusa.wanandroid.util.ActivityUtil;
 
 /**
  *  只有需要自行控制查询数据行为的碎片才需要继承这个基类
@@ -38,5 +39,10 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
         if (mPresenter != null) {
             mPresenter.removeAttach();
         }
+    }
+
+    @Override
+    public void showToast(String message) {
+        ActivityUtil.showToast(message, getContext());
     }
 }

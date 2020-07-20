@@ -5,6 +5,7 @@ import android.app.Activity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.gochiusa.wanandroid.base.presenter.BasePresenter;
+import com.gochiusa.wanandroid.util.ActivityUtil;
 
 public abstract class BaseActivity<P extends BasePresenter> extends AppCompatActivity
         implements BaseView {
@@ -38,5 +39,10 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
         if (mPresenter != null) {
             mPresenter.removeAttach();
         }
+    }
+
+    @Override
+    public void showToast(String message) {
+        ActivityUtil.showToast(message, this);
     }
 }
