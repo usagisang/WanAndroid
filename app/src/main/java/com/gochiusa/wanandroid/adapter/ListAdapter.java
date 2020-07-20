@@ -28,11 +28,8 @@ public abstract class ListAdapter<T, V extends RecyclerView.ViewHolder>
 
     public void clear() {
         synchronized (mLock) {
-            int size = getItemCount();
             mList.clear();
-            if (size != 0) {
-                notifyItemRangeRemoved(0, size);
-            }
+            notifyDataSetChanged();
         }
     }
 
