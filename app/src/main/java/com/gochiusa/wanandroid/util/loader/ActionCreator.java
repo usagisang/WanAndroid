@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.widget.ImageView;
 
-class ActionCreator {
+public class ActionCreator {
 
     private ImageLoader mImageLoader;
      /**
