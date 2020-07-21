@@ -60,7 +60,8 @@ public class ProjectAdapter extends FootViewAdapter<Project, ProjectAdapter.Proj
         viewHolder.projectTitleView.setText(project.getTitle());
         // 通过工具类发起图片请求
         ImageLoader.with(mContext).load(
-                project.getEnvelopePictureLink()).into(viewHolder.imageView);
+                project.getEnvelopePictureLink()).placeHolder(R.mipmap.default_project_img)
+                .error(R.mipmap.error_img).into(viewHolder.imageView);
     }
 
 
