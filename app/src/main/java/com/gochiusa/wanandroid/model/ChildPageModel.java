@@ -20,10 +20,6 @@ public class ChildPageModel extends HttpModel<Project> implements ChildContract.
      *  偏移量计算工具类
      */
     private OffsetCalculator mOffsetCalculator;
-    /**
-     *   加载中出现错误的提示信息
-     */
-    private static final String ERROR_MESSAGE = "数据加载失败！";
 
     @Override
     public void loadMoreProject(RequestCallback<List<Project>, String> callback, int typeId) {
@@ -82,9 +78,6 @@ public class ChildPageModel extends HttpModel<Project> implements ChildContract.
         return SingleModel.MODEL;
     }
 
-    /**
-     *  单例模式
-     */
     private static final class SingleModel {
         private static final ChildPageModel MODEL = new ChildPageModel();
     }

@@ -55,7 +55,7 @@ public class WebViewActivity extends AppCompatActivity {
      */
     private void initChildView() {
         // 找到子控件
-        mToolbar = findViewById(R.id.tb_web);
+        mToolbar = findViewById(R.id.toolbar);
         mWebView = findViewById(R.id.web_view);
         mProgressBar = findViewById(R.id.progress_bar_web);
         // 对Toolbar进行一些设置
@@ -68,8 +68,10 @@ public class WebViewActivity extends AppCompatActivity {
      */
     private void initToolbar(Toolbar toolbar) {
         setSupportActionBar(toolbar);
-        // 打开返回的按钮
         if (getSupportActionBar() != null) {
+            // 设置图标
+            toolbar.setNavigationIcon(R.drawable.ic_web_back);
+            // 打开返回的菜单按钮
             getSupportActionBar().setHomeButtonEnabled(true);
         }
         // 设置状态栏的颜色

@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:fullBackupContent="false"
         android:allowBackup="true"
         android:name=".util.MyApplication"
         android:icon="@mipmap/ic_launcher"
@@ -24,6 +25,10 @@
         </activity>
         <activity
             android:name=".tasks.web.WebViewActivity"
+            android:launchMode="singleTop">
+        </activity>
+        <activity
+            android:name=".tasks.main.sort.branch.BranchActivity"
             android:launchMode="singleTop">
         </activity>
     </application>

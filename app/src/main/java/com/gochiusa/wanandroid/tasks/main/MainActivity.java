@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -66,13 +67,20 @@ public class MainActivity extends AppCompatActivity {
      */
     private void initChildView() {
         // 初始化Toolbar并设置
-        mToolbar = findViewById(R.id.tb_main);
-        setSupportActionBar(mToolbar);
-        // 设置状态栏的颜色
-        ActivityUtil.setWindowStatusBarColor(this, R.color.colorPrimary);
+        mToolbar = findViewById(R.id.toolbar);
+        initToolbar(mToolbar);
         // 初始化底部导航栏
         mBottomNavigationView = findViewById(R.id.bnv_main);
         initBottomNavigationView(mBottomNavigationView);
+    }
+
+    /**
+     *  设置Toolbar
+     */
+    private void initToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        // 设置状态栏的颜色
+        ActivityUtil.setWindowStatusBarColor(this, R.color.colorPrimary);
     }
 
     /**

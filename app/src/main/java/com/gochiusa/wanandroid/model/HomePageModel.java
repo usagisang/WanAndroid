@@ -20,14 +20,6 @@ public class HomePageModel extends HttpModel<Article> implements HomePageContrac
      *  偏移量计算工具类
      */
     private OffsetCalculator mOffsetCalculator;
-    /**
-     * 到达尽头的提示
-     */
-    public static final String NOT_MORE_TIP = "到达了尽头惹";
-    /**
-     *   网络加载中出现错误的提示信息
-     */
-    public static final String ERROR_MESSAGE = "网络数据加载失败！";
 
 
     public HomePageModel() {

@@ -34,4 +34,11 @@ public final class CreateURLToRequest {
     public static String createProjectDataURL(int page, int id) {
         return DOMAIN_URL + PROJECT_API + LIST_API + page + DATA_FORMAT + CID_PARAM + id;
     }
+
+    /**
+     *  生成一个获取二级分类下的所有具体的文章的URL
+     */
+    public static String createTypeArticle(int page, int id) {
+        return DOMAIN_URL + HOME_ARTICLE_API + LIST_API + page + DATA_FORMAT + CID_PARAM + id;
+    }
 }

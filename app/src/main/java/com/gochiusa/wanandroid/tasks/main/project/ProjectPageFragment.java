@@ -40,7 +40,7 @@ public class ProjectPageFragment extends BaseFragment<ProjectContract.ProjectPre
     private List<Integer> mChapterIdList;
 
     /**
-     *  碎片管理器，应当在碎片被初始化之后设置
+     *  碎片管理器
      */
     private FragmentManager mFragmentManager;
 
@@ -54,7 +54,7 @@ public class ProjectPageFragment extends BaseFragment<ProjectContract.ProjectPre
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_project, container, false);
+        View view = inflater.inflate(R.layout.layout_view_pager, container, false);
         initChildView(view);
         // 向Presenter请求分类数据
         getPresenter().requestProjectTree();
@@ -66,8 +66,8 @@ public class ProjectPageFragment extends BaseFragment<ProjectContract.ProjectPre
      * @param parent 带有子控件的容器
      */
     private void initChildView(View parent) {
-        mTabLayout = parent.findViewById(R.id.tab_project);
-        mViewPager = parent.findViewById(R.id.vp_project);
+        mTabLayout = parent.findViewById(R.id.tab_layout);
+        mViewPager = parent.findViewById(R.id.vp_fragment);
     }
 
 

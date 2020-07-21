@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.gochiusa.wanandroid.R;
 import com.gochiusa.wanandroid.entity.Tree;
+import com.gochiusa.wanandroid.tasks.main.sort.branch.BranchActivity;
 
 import java.util.List;
 
@@ -29,7 +30,16 @@ public class TreeAdapter extends ListAdapter<Tree, TreeAdapter.TreeViewHolder> {
     public TreeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(
                 R.layout.item_sort_tree_view, parent, false);
-        return new TreeViewHolder(itemView);
+        TreeViewHolder treeViewHolder = new TreeViewHolder(itemView);
+        // 指定itemView的点击事件
+        itemView.setOnClickListener((view) -> {
+            // 仅当context不为null时进行跳转
+            if (mContext != null) {
+                BranchActivity.startThisActivity(mContext, getItem(
+                        treeViewHolder.getAdapterPosition()));
+            }
+        });
+        return treeViewHolder;
     }
 
     @Override
