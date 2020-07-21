@@ -3,4 +3,5 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="main_search">搜索</string>
     <string name="web_open_in_browser">在浏览器内打开</string>
+    <string name="project_picture">项目图片</string>
 </resources>

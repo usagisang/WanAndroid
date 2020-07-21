@@ -7,7 +7,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_main"
+        android:id="@+id/rv_show_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbars="vertical" />
