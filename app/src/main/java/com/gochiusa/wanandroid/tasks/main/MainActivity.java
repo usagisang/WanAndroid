@@ -13,6 +13,7 @@ import android.view.MenuItem;
 
 import com.gochiusa.wanandroid.R;
 import com.gochiusa.wanandroid.tasks.main.home.HomePageFragment;
+import com.gochiusa.wanandroid.tasks.main.project.ProjectPageFragment;
 import com.gochiusa.wanandroid.tasks.main.sort.SortPageFragment;
 import com.gochiusa.wanandroid.util.ActivityUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -36,6 +37,11 @@ public class MainActivity extends AppCompatActivity {
      * 知识体系页面的碎片
      */
     private Fragment mSortPageFragment;
+
+    /**
+     *  项目页面的碎片
+     */
+    private Fragment mProjectPageFragment;
 
     /**
      *  标题栏
@@ -84,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 }
                 case R.id.menu_main_navigation_project : {
+                    changeFragment(mProjectPageFragment);
                     break;
                 }
             }
@@ -96,16 +103,18 @@ public class MainActivity extends AppCompatActivity {
      */
     private void initFragments() {
         int resourceId = R.id.fl_main_content;
+        // 初始化碎片管理器
+        mFragmentManager = getSupportFragmentManager();
         // 初始化碎片
         mHomePageFragment = new HomePageFragment();
         mSortPageFragment = new SortPageFragment();
-        // 初始化碎片管理器
-        mFragmentManager = getSupportFragmentManager();
+        mProjectPageFragment = new ProjectPageFragment(mFragmentManager);
         // 打开事务
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         // 添加所有需要显示的碎片，并隐藏除了首页之外的碎片
         transaction.add(resourceId, mHomePageFragment)
-                .add(resourceId, mSortPageFragment).hide(mSortPageFragment);
+                .add(resourceId, mSortPageFragment).add(resourceId, mProjectPageFragment)
+                .hide(mSortPageFragment).hide(mProjectPageFragment);
         transaction.commit();
 
         mTopFragment = mHomePageFragment;
