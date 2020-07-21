@@ -3,6 +3,7 @@ package com.gochiusa.wanandroid.tasks.main.sort;
 import com.gochiusa.wanandroid.base.RequestCallback;
 import com.gochiusa.wanandroid.base.presenter.BasePresenterImpl;
 import com.gochiusa.wanandroid.entity.Tree;
+import com.gochiusa.wanandroid.model.LoadTreeModel;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class SortPagePresenter extends BasePresenterImpl<SortPageContract.SortVi
     private SortPageContract.SortModel mSortModel;
     public SortPagePresenter(SortPageContract.SortView view) {
         super(view);
-        mSortModel = new SortPageModel();
+        mSortModel = LoadTreeModel.newInstance();
     }
     @Override
     public void refresh() {
@@ -20,8 +21,14 @@ public class SortPagePresenter extends BasePresenterImpl<SortPageContract.SortVi
             // 显示刷新进度条
             getView().showRefreshing();
         }
-        mSortModel.loadAllTrees(this);
+        mSortModel.loadTypeTrees(this);
     }
+
+    /**
+     *  什么都不做
+     */
+    @Override
+    public void showMore() {}
 
     @Override
     public void onResponse(List<Tree> response) {

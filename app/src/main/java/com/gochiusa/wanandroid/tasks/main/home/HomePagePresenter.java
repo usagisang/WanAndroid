@@ -3,6 +3,7 @@ package com.gochiusa.wanandroid.tasks.main.home;
 import com.gochiusa.wanandroid.base.RequestCallback;
 import com.gochiusa.wanandroid.base.presenter.BasePresenterImpl;
 import com.gochiusa.wanandroid.entity.Article;
+import com.gochiusa.wanandroid.model.HomePageModel;
 
 import java.util.List;
 
