@@ -8,7 +8,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -18,6 +17,7 @@ import com.gochiusa.wanandroid.tasks.main.project.ProjectPageFragment;
 import com.gochiusa.wanandroid.tasks.main.sort.SortPageFragment;
 import com.gochiusa.wanandroid.util.ActivityUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -155,5 +155,13 @@ public class MainActivity extends AppCompatActivity {
             ActivityUtil.hideFragmentWithShow(mFragmentManager, fragment, mTopFragment);
             mTopFragment = fragment;
         }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // 清除所有碎片
+        ActivityUtil.detachAllFragment(mFragmentManager);
     }
 }

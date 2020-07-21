@@ -52,6 +52,18 @@ public final class ActivityUtil {
     }
 
     /**
+     *  释放碎片管理器中所有的Fragment
+     */
+    public static void detachAllFragment(FragmentManager fragmentManager) {
+        List<Fragment> fragmentList = fragmentManager.getFragments();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        for (Fragment fragment : fragmentList) {
+            transaction.detach(fragment);
+        }
+        transaction.commit();
+    }
+
+    /**
      *  设置状态栏显示的颜色
      * @param activity 正在任务栈顶层显示的Activity
      * @param colorId 来自资源文件（R文件）的颜色id
