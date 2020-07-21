@@ -8,7 +8,6 @@ import com.jakewharton.disklrucache.DiskLruCache;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  *  基于DiskLruCache封装的磁盘缓存类
@@ -27,14 +26,17 @@ public class DiskCache implements Cache {
     @Override
     public Bitmap get(String key) {
         try {
-            // 获取输入流
-            InputStream inputStream = mDiskLruCache.get(
-                    Utils.createFileKey(key)).getInputStream(0);
-            // 将输入流解析成位图
-            return BitmapFactory.decodeStream(inputStream);
+            // 获取缓存快照
+            DiskLruCache.Snapshot snapshot = mDiskLruCache.get(
+                    Utils.createFileKey(key));
+            if (snapshot != null) {
+                // 获取输入流，并解析成位图返回
+                return BitmapFactory.decodeStream(snapshot.getInputStream(0));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        // 否则返回null
         return null;
     }
 
@@ -46,7 +48,6 @@ public class DiskCache implements Cache {
             // 打开输出流，并将位图转换成字节数组，写入
             editor.newOutputStream(0).write(getBitmapBytes(bitmap));
             editor.commit();
-            mDiskLruCache.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

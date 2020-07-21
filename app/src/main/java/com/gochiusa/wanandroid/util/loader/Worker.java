@@ -26,9 +26,9 @@ class Worker implements Callable<Worker> {
     public Worker call() {
         try {
             result = loadBitmap();
-            dispatcher.performComplete(action);
+            dispatcher.dispatchComplete(action);
         } catch (Exception ignored) {
-            dispatcher.performError(this);
+            dispatcher.dispatchError(this);
         }
         return this;
     }

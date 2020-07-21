@@ -4,6 +4,10 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import static android.content.Context.ACTIVITY_SERVICE;
 
 final class Utils {
@@ -11,10 +15,6 @@ final class Utils {
      *  内存缓存允许的最大容量，20M
      */
     private static final int MAX_MEMORY_CACHE_SIZE = 20 * 1024 * 1024;
-    /**
-     * 正则表达式
-     */
-    private static final String PATTERN = "[a-zA-Z0-9_]";
 
     /**
      *  计算创建的内存缓存的大小，默认为可用内存的1/8,但不超过MAX_MEMORY_CACHE_SIZE
@@ -39,17 +39,27 @@ final class Utils {
     }
 
     /**
-     *  DiskLruCache只支持有限的字符当作键值，该方法将所有特殊字符替换成"a"
+     *  DiskLruCache只支持有限的字符当作键值，该方法将网址使用MD5计算摘要值
      * @param originKey 未经规范化的键值
      * @return 转换之后的键值
      */
     static String createFileKey(String originKey) {
-        char[] allChar = originKey.toCharArray();
-        for (int i = 0;i < allChar.length;i ++) {
-            if (! String.valueOf(allChar[i]).matches(PATTERN)) {
-                allChar[i] = 'a';
-            }
+        return stringToMD5(originKey);
+    }
+
+    /**
+     *  将字符串以MD5算法进行计算后，生成新的字符串
+     *  注意返回的不是严格意义的MD5的字符串值，MD5值小于32位，忽略了在前面补0这一步
+     */
+    public static String stringToMD5(String plainText) {
+        byte[] secretBytes;
+        try {
+            secretBytes = MessageDigest.getInstance("md5").digest(
+                    plainText.getBytes());
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            secretBytes = new byte[0];
         }
-        return String.valueOf(allChar);
+        return new BigInteger(1, secretBytes).toString(16);
     }
 }
