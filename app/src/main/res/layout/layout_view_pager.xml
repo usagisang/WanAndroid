@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tab_project"
+        android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="@color/colorPrimary"
@@ -19,7 +19,7 @@
 
 
     <androidx.viewpager.widget.ViewPager
-        android:id="@+id/vp_project"
+        android:id="@+id/vp_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
