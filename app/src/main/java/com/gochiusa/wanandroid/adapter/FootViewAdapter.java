@@ -102,6 +102,14 @@ public abstract class FootViewAdapter<T, V extends FootViewAdapter.NormalViewHol
      */
     void onBindFootViewHolder(@NonNull NormalViewHolder holder, int position) {}
 
+    public void hideFootView() {
+        mFootView.setVisibility(View.GONE);
+    }
+
+    public void showFootView() {
+        mFootView.setVisibility(View.VISIBLE);
+    }
+
     /**
      *  尾布局和普通布局的父类
      */

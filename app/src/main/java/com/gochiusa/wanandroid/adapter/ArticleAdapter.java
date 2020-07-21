@@ -49,14 +49,6 @@ public class ArticleAdapter extends FootViewAdapter<Article, FootViewAdapter.Nor
     }
 
 
-    public void hideFootView() {
-        mFootView.setVisibility(View.GONE);
-    }
-
-    public void showFootView() {
-        mFootView.setVisibility(View.VISIBLE);
-    }
-
     /**
      * 辅助方法，生成普通的内容子项
      */

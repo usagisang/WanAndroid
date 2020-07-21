@@ -33,7 +33,7 @@ public class ProjectAdapter extends FootViewAdapter<Project, ProjectAdapter.Proj
     NormalViewHolder createContentView(ViewGroup parent) {
         // 创建普通的子项
         View itemView = LayoutInflater.from(parent.getContext()).inflate(
-                R.layout.item_main_home_page, parent, false);
+                R.layout.item_project, parent, false);
         // 创建ViewHolder
         ProjectViewHolder viewHolder = new ProjectViewHolder(itemView);
         // 设置子项点击事件
