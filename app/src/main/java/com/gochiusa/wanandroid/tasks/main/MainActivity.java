@@ -15,6 +15,7 @@ import com.gochiusa.wanandroid.R;
 import com.gochiusa.wanandroid.tasks.main.home.HomePageFragment;
 import com.gochiusa.wanandroid.tasks.main.project.ProjectPageFragment;
 import com.gochiusa.wanandroid.tasks.main.sort.SortPageFragment;
+import com.gochiusa.wanandroid.tasks.search.SearchActivity;
 import com.gochiusa.wanandroid.util.ActivityUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -139,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_main_toolbar_search : {
-
+                SearchActivity.startThisActivity(this);
                 break;
             }
         }

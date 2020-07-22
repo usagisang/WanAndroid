@@ -13,4 +13,5 @@ public final class DomainAPIConstant {
     static final String CID_PARAM = "?cid=";
     static final String HOT_KEY_API = "hotkey";
     static final String QUERY_API = "query/";
+    public static final String KEY_PARAM = "k=";
 }

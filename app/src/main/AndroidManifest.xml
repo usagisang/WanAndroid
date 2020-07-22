@@ -31,6 +31,9 @@
             android:name=".tasks.main.sort.branch.BranchActivity"
             android:launchMode="singleTop">
         </activity>
+        <activity
+            android:name=".tasks.search.SearchActivity"
+            android:launchMode="singleTask"/>
     </application>
 
 </manifest>
