@@ -36,8 +36,7 @@ public abstract class BaseRecyclerViewFragment<P extends BaseRecyclerViewPresent
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.layout_recycler_view, container,false);
         initChildView(view);
-        // 向Presenter请求数据（刷新操作）
-        getPresenter().refresh();
+        requestFirstData();
         return view;
     }
 
@@ -51,7 +50,7 @@ public abstract class BaseRecyclerViewFragment<P extends BaseRecyclerViewPresent
         // 对RecyclerView进行配置
         initRecyclerView(mRecyclerView);
         // 设置SwipeRefreshLayout刷新时触发的操作
-        mSwipeRefreshLayout.setOnRefreshListener(() -> getPresenter().refresh());
+        mSwipeRefreshLayout.setOnRefreshListener(this::refreshData);
     }
 
     /**
@@ -89,6 +88,23 @@ public abstract class BaseRecyclerViewFragment<P extends BaseRecyclerViewPresent
      */
     public void hideRefreshing() {
         mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    /**
+     *  指定碎片在onCreateView阶段如何向Presenter请求初始数据。
+     *  默认使用{@code getPresenter().refresh()}，可以重写以支持更多形式
+     */
+    protected void requestFirstData() {
+        // 默认的请求数据方式（刷新操作）
+        getPresenter().refresh();
+    }
+
+    /**
+     *  指定SwipeRefreshLayout刷新如何向Presenter请求数据。
+     *  默认使用{@code getPresenter().refresh()}，可以重写以支持更多形式
+     */
+    protected void refreshData() {
+        getPresenter().refresh();
     }
 
 

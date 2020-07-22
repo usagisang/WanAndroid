@@ -25,17 +25,6 @@ public class BranchFragment extends BaseRecyclerViewFragment<BranchContract.Pres
     private int mArticleTypeId;
 
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.layout_recycler_view, container,false);
-        initChildView(view);
-        // 向Presenter请求最初的数据
-        getPresenter().firstRequest(mArticleTypeId);
-        return view;
-    }
-
     @Override
     protected BranchContract.Presenter onBindPresenter() {
         return new BranchPresenter(this);
@@ -49,6 +38,12 @@ public class BranchFragment extends BaseRecyclerViewFragment<BranchContract.Pres
         super.initRecyclerView(recyclerView);
         mArticleAdapter = new ArticleAdapter(getContext(), new ArrayList<>());
         recyclerView.setAdapter(mArticleAdapter);
+    }
+
+    @Override
+    protected void requestFirstData() {
+        // 向Presenter请求最初的数据
+        getPresenter().firstRequest(mArticleTypeId);
     }
 
 
