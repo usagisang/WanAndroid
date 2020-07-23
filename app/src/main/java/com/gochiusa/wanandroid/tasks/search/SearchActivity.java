@@ -111,6 +111,8 @@ public class SearchActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.search_view, menu);
         // 通过MenuItem得到SearchView
         mSearchView = (SearchView) menu.findItem(R.id.search_view_top).getActionView();
+        // 将SearchView传递给碎片
+        mSearchFragment.setSearchView(mSearchView);
         initSearchView(mSearchView);
         return true;
     }
@@ -139,7 +141,9 @@ public class SearchActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                // 关闭软键盘
                 searchView.clearFocus();
+                // 提交搜索
                 showSearchResult(query);
                 return false;
             }

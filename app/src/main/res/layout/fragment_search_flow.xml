@@ -15,6 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent" />
     <TextView
+        android:id="@+id/tv_search_history"
         android:layout_margin="10dp"
         android:text="@string/search_history"
         android:layout_width="wrap_content"
