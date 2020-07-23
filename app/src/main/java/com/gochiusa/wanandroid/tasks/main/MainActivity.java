@@ -147,6 +147,13 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        // 清除所有绑定在碎片管理器上的碎片
+        ActivityUtil.detachAllFragment(mFragmentManager);
+        super.onBackPressed();
+    }
+
     /**
      * 辅助方法，切换显示的碎片
      */
@@ -156,13 +163,5 @@ public class MainActivity extends AppCompatActivity {
             ActivityUtil.hideFragmentWithShow(mFragmentManager, fragment, mTopFragment);
             mTopFragment = fragment;
         }
-    }
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // 清除所有碎片
-        ActivityUtil.detachAllFragment(mFragmentManager);
     }
 }
