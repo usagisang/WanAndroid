@@ -11,8 +11,16 @@ class HomePagePresenter extends BasePresenterImpl<HomePageContract.HomeView>
         implements HomePageContract.HomePresenter {
 
     private HomePageContract.HomeModel mHomeModel;
-    // 是否已经获取所有数据
+
+    /**
+     *  是否已经获取所有数据
+     */
     private boolean mHasLoadedAll = false;
+
+    /**
+     *  是否处于刷新状态
+     */
+    private boolean mIsRefreshing = false;
 
     public HomePagePresenter(HomePageContract.HomeView view) {
         super(view);
@@ -24,6 +32,8 @@ class HomePagePresenter extends BasePresenterImpl<HomePageContract.HomeView>
         if (isViewAttach()) {
             // 显示正在刷新
             getView().showRefreshing();
+            // 进入刷新状态
+            mIsRefreshing = true;
         }
         RequestCallback<List<Article>, String> callback =
                 new RequestCallback<List<Article>, String>() {
@@ -35,6 +45,8 @@ class HomePagePresenter extends BasePresenterImpl<HomePageContract.HomeView>
                     // 移除所有已存在的数据，添加新的数据
                     getView().removeAllArticle();
                     getView().addArticlesToList(response);
+                    // 退出刷新状态
+                    mIsRefreshing = false;
                 }
             }
             @Override
@@ -43,6 +55,8 @@ class HomePagePresenter extends BasePresenterImpl<HomePageContract.HomeView>
                 getView().hideRefreshing();
                 // 弹出提示
                 getView().showToast(failure);
+                // 退出刷新状态
+                mIsRefreshing = false;
             }
         };
         mHomeModel.loadNewArticle(callback);
@@ -53,8 +67,8 @@ class HomePagePresenter extends BasePresenterImpl<HomePageContract.HomeView>
      */
     @Override
     public void showMore() {
-        // 如果已经加载完毕则直接退出
-        if (mHasLoadedAll) {
+        // 如果正在刷新或者网络数据全部加载到列表，则直接退出
+        if (mIsRefreshing || mHasLoadedAll) {
             return;
         }
         // 显示正在加载的尾布局

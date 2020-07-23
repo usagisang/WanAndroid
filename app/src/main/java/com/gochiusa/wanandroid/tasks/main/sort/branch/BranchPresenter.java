@@ -21,6 +21,11 @@ public class BranchPresenter extends BasePresenterImpl<BranchContract.View>
      */
     private boolean mHasLoadedAll = false;
 
+    /**
+     *  是否处于刷新状态
+     */
+    private boolean mIsRefreshing = false;
+
     private BranchContract.Model mBranchModel;
     public BranchPresenter(BranchContract.View view) {
         super(view);
@@ -45,6 +50,8 @@ public class BranchPresenter extends BasePresenterImpl<BranchContract.View>
         if (isViewAttach()) {
             // 显示正在刷新
             getView().showRefreshing();
+            // 进入刷新状态
+            mIsRefreshing = true;
         }
         RequestCallback<List<Article>, String> callback =
                 new RequestCallback<List<Article>, String>() {
@@ -56,6 +63,8 @@ public class BranchPresenter extends BasePresenterImpl<BranchContract.View>
                             // 移除所有已存在的数据，添加新的数据
                             getView().removeAllArticle();
                             getView().addArticlesToList(response);
+                            // 退出刷新状态
+                            mIsRefreshing = false;
                         }
                     }
                     @Override
@@ -64,6 +73,8 @@ public class BranchPresenter extends BasePresenterImpl<BranchContract.View>
                         getView().hideRefreshing();
                         // 弹出提示
                         getView().showToast(failure);
+                        // 退出刷新状态
+                        mIsRefreshing = false;
                     }
                 };
         // 进行刷新操作
@@ -73,7 +84,7 @@ public class BranchPresenter extends BasePresenterImpl<BranchContract.View>
     @Override
     public void showMore() {
         // 如果已经加载完毕则直接退出
-        if (mHasLoadedAll) {
+        if (mIsRefreshing || mHasLoadedAll) {
             return;
         }
         // 显示正在加载的尾布局
