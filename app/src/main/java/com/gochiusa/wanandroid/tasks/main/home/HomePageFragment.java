@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.gochiusa.wanandroid.adapter.ArticleAdapter;
 import com.gochiusa.wanandroid.base.view.BaseRecyclerViewFragment;
 import com.gochiusa.wanandroid.entity.Article;
+import com.gochiusa.wanandroid.util.ActivityUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,16 @@ public class HomePageFragment extends BaseRecyclerViewFragment<HomePageContract.
     @Override
     protected HomePageContract.HomePresenter onBindPresenter() {
         return new HomePagePresenter(this);
+    }
+
+    @Override
+    protected void requestFirstData() {
+        if (ActivityUtil.checkNetWork(getContext())) {
+            super.requestFirstData();
+        } else {
+            // 如果网络不通畅，则不使用父类的默认实现
+            getPresenter().loadLocalArticle();
+        }
     }
 
     /**

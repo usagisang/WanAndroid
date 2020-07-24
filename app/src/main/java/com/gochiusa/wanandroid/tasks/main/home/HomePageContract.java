@@ -19,11 +19,13 @@ public interface HomePageContract {
     }
 
     interface HomePresenter extends BaseRecyclerViewPresenter {
-
+        void loadLocalArticle();
     }
 
     interface HomeModel {
         void loadMoreArticle(RequestCallback<List<Article>, String> callback);
         void loadNewArticle(RequestCallback<List<Article>, String> callback);
+        void loadArticleFromDatabase(RequestCallback<List<Article>, String> callback);
+        void saveToDatabase(List<Article> articleList);
     }
 }
