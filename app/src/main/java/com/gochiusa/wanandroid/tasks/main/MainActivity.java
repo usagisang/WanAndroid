@@ -7,6 +7,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +21,7 @@ import com.gochiusa.wanandroid.tasks.main.project.ProjectPageFragment;
 import com.gochiusa.wanandroid.tasks.main.sort.SortPageFragment;
 import com.gochiusa.wanandroid.tasks.search.SearchActivity;
 import com.gochiusa.wanandroid.util.ActivityUtil;
+import com.gochiusa.wanandroid.util.NotificationUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
@@ -60,6 +65,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initChildView();
         initFragments();
+        initNotificationChannel();
+        // 创建定时任务
+        ActivityUtil.startServiceAfter(
+                (AlarmManager) getSystemService(Context.ALARM_SERVICE), this);
     }
 
 
@@ -127,6 +136,17 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
 
         mTopFragment = mHomePageFragment;
+    }
+
+    /**
+     *  尝试创建通知渠道
+     */
+    private void initNotificationChannel() {
+        // 如果版本大于8，创建通知渠道
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationUtil.createNotificationChannel((NotificationManager) getSystemService(
+                    Context.NOTIFICATION_SERVICE));
+        }
     }
 
 
