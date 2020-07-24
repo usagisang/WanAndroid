@@ -71,7 +71,7 @@ public class BranchModel extends HttpModel<Article> implements BranchContract.Mo
      */
     private BranchModel() {
         super();
-        mOffsetCalculator = new OffsetCalculator(0, 1, 0);
+        mOffsetCalculator = new OffsetCalculator(0, 1, Integer.MAX_VALUE);
     }
     public static BranchModel newInstance() {
         return SingleModel.MODEL;

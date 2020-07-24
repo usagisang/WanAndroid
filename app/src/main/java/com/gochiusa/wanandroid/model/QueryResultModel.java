@@ -42,7 +42,7 @@ public class QueryResultModel extends SingleThreadModel implements ResultContrac
     public QueryResultModel() {
         // 初始化主线程Handler
         initMainHandler(createCallback());
-        mOffsetCalculator = new OffsetCalculator(0, 1, 0);
+        mOffsetCalculator = new OffsetCalculator(0, 1, Integer.MAX_VALUE);
     }
 
     private Handler.Callback createCallback() {
