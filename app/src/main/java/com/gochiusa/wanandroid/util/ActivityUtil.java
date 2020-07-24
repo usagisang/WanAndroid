@@ -6,6 +6,11 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.SystemClock;
 import android.view.Window;
 import android.view.WindowManager;
@@ -110,7 +115,37 @@ public final class ActivityUtil {
         Intent intent = new Intent(context, NotificationService.class);
         PendingIntent pendingIntent = PendingIntent.getService(
                 context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        // 创建Alarm
-        alarmManager.set(AlarmManager.ELAPSED_REALTIME, startTime ,pendingIntent);
+        alarmManager.cancel(pendingIntent);
+        // 先取消掉上一次填充的Alarm
+        alarmManager.cancel(pendingIntent);
+        // 重新创建Alarm
+        alarmManager.setExact(AlarmManager.ELAPSED_REALTIME, startTime ,pendingIntent);
+    }
+
+    public static boolean checkNetWork(@Nullable Context context) {
+        if (context == null) {
+            return false;
+        }
+        ConnectivityManager manager = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (manager == null) {
+            return false;
+        }
+        // 分版本调用API
+        if (Build.VERSION.SDK_INT < 23) {
+            NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+            return networkInfo != null && networkInfo.isAvailable();
+        } else {
+            Network network = manager.getActiveNetwork();
+            if (network == null) {
+                return false;
+            }
+            NetworkCapabilities capabilities = manager.getNetworkCapabilities(network);
+            if (capabilities == null) {
+                return false;
+            }
+            return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+
+        }
     }
 }
