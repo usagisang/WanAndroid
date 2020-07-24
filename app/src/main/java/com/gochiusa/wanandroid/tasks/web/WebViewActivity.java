@@ -27,16 +27,18 @@ import static android.view.KeyEvent.KEYCODE_BACK;
 
 public class WebViewActivity extends AppCompatActivity {
 
+    public static final String OPEN_URL = "openUrl";
     public static void startThisActivity(Context context, String firstURL) {
         Intent intent = new Intent(context, WebViewActivity.class);
-        sFirstURL = firstURL;
+        // 将需要打开的URL填充到Intent
+        intent.putExtra(OPEN_URL, firstURL);
         context.startActivity(intent);
     }
 
     /**
      * WebView加载时所启动的第一个页面的URL
      */
-    private static String sFirstURL;
+    private String mFirstURL;
 
 
     private Toolbar mToolbar;
@@ -47,6 +49,8 @@ public class WebViewActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
+        // 获取网址
+        mFirstURL = getIntent().getStringExtra(OPEN_URL);
         initChildView();
     }
 
@@ -115,7 +119,7 @@ public class WebViewActivity extends AppCompatActivity {
         });
 
         // 开始加载网页
-        webView.loadUrl(sFirstURL);
+        webView.loadUrl(mFirstURL);
 
     }
 
@@ -130,7 +134,7 @@ public class WebViewActivity extends AppCompatActivity {
             intent.setData(Uri.parse(mWebView.getUrl()));
         } else {
             // 如果URL被重定向为打开具体应用的URL，则使用原始的URL尝试打开页面
-            intent.setData(Uri.parse(sFirstURL));
+            intent.setData(Uri.parse(mFirstURL));
         }
         startActivity(intent);
     }
