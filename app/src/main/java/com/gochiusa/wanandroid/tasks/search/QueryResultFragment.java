@@ -1,15 +1,7 @@
-package com.gochiusa.wanandroid.tasks.main.sort.branch;
+package com.gochiusa.wanandroid.tasks.search;
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gochiusa.wanandroid.R;
 import com.gochiusa.wanandroid.adapter.ArticleAdapter;
 import com.gochiusa.wanandroid.base.view.BaseRecyclerViewFragment;
 import com.gochiusa.wanandroid.entity.Article;
@@ -17,18 +9,15 @@ import com.gochiusa.wanandroid.entity.Article;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BranchFragment extends BaseRecyclerViewFragment<BranchContract.Presenter>
-        implements BranchContract.View {
+public class QueryResultFragment extends BaseRecyclerViewFragment<ResultContract.ResultPresenter>
+        implements ResultContract.ResultView {
+
+    /**
+     *  搜索关键词，目前默认的空字符串会全匹配搜索结果
+     */
+    private String mSearchKey = "";
 
     private ArticleAdapter mArticleAdapter;
-
-    private int mArticleTypeId;
-
-
-    @Override
-    protected BranchContract.Presenter onBindPresenter() {
-        return new BranchPresenter(this);
-    }
 
     /**
      *  重写初始化RecyclerView的方法，添加初始化适配器的部分
@@ -36,27 +25,45 @@ public class BranchFragment extends BaseRecyclerViewFragment<BranchContract.Pres
     @Override
     protected void initRecyclerView(RecyclerView recyclerView) {
         super.initRecyclerView(recyclerView);
+        // 初始化适配器
         mArticleAdapter = new ArticleAdapter(getContext(), new ArrayList<>());
         recyclerView.setAdapter(mArticleAdapter);
     }
 
     @Override
     protected void requestFirstData() {
-        // 向Presenter请求最初的数据
-        getPresenter().firstRequest(mArticleTypeId);
+        getPresenter().firstRequest(mSearchKey);
     }
 
+
+    /**
+     *  设置搜索关键词
+     */
+    public void setSearchKey(String searchKey) {
+        mSearchKey = searchKey;
+    }
+
+    @Override
+    protected ResultContract.ResultPresenter onBindPresenter() {
+        return new QueryResultPresenter(this);
+    }
 
     @Override
     public void addArticlesToList(List<Article> articles) {
         mArticleAdapter.addAll(articles);
     }
 
+    /**
+     *  显示尾布局
+     */
     @Override
     public void showLoading() {
         mArticleAdapter.showFootView();
     }
 
+    /**
+     * 隐藏尾布局
+     */
     @Override
     public void hideLoading() {
         mArticleAdapter.hideFootView();
@@ -65,11 +72,5 @@ public class BranchFragment extends BaseRecyclerViewFragment<BranchContract.Pres
     @Override
     public void removeAllArticle() {
         mArticleAdapter.clear();
-    }
-
-    public BranchFragment() {}
-
-    public BranchFragment(int articleTypeId) {
-        mArticleTypeId = articleTypeId;
     }
 }

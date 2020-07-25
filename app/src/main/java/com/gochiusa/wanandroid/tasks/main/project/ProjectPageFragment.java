@@ -44,6 +44,11 @@ public class ProjectPageFragment extends BaseFragment<ProjectContract.ProjectPre
      */
     private FragmentManager mFragmentManager;
 
+    /**
+     *  状态变量，是否将项目分类数据加载完毕
+     */
+    private boolean mIsTreeLoadSuccess = false;
+
     public ProjectPageFragment() {}
 
     public ProjectPageFragment(FragmentManager fragmentManager) {
@@ -59,6 +64,16 @@ public class ProjectPageFragment extends BaseFragment<ProjectContract.ProjectPre
         // 向Presenter请求分类数据
         getPresenter().requestProjectTree();
         return view;
+    }
+
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        // 当重新显示碎片且数据未加载，尝试再次加载项目分类数据
+        if (! (hidden || mIsTreeLoadSuccess)) {
+            getPresenter().requestProjectTree();
+        }
     }
 
     /**
@@ -79,6 +94,8 @@ public class ProjectPageFragment extends BaseFragment<ProjectContract.ProjectPre
 
     @Override
     public void treeLoadSuccess(Tree projectTree) {
+        // 重置状态变量
+        mIsTreeLoadSuccess = true;
         // 初始化存放分类的id和名称的集合
         mChapterIdList = new ArrayList<>();
         mChapterNameList = new ArrayList<>();

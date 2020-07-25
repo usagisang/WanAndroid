@@ -72,7 +72,7 @@ public class ChildPageModel extends HttpModel<Project> implements ChildContract.
      */
     private ChildPageModel() {
         super();
-        mOffsetCalculator = new OffsetCalculator(0, 1, 0);
+        mOffsetCalculator = new OffsetCalculator(0, 1, Integer.MAX_VALUE);
     }
     public static ChildPageModel newInstance() {
         return SingleModel.MODEL;

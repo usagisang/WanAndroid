@@ -1,49 +1,36 @@
-package com.gochiusa.wanandroid.tasks.main.sort.branch;
+package com.gochiusa.wanandroid.tasks.search;
 
 import com.gochiusa.wanandroid.base.RequestCallback;
 import com.gochiusa.wanandroid.base.presenter.BasePresenterImpl;
 import com.gochiusa.wanandroid.entity.Article;
-import com.gochiusa.wanandroid.model.BranchModel;
 import com.gochiusa.wanandroid.model.HomePageModel;
+import com.gochiusa.wanandroid.model.QueryResultModel;
 
 import java.util.List;
 
-public class BranchPresenter extends BasePresenterImpl<BranchContract.View>
-        implements BranchContract.Presenter {
+class QueryResultPresenter extends BasePresenterImpl<ResultContract.ResultView>
+        implements ResultContract.ResultPresenter {
 
     /**
-     *  进行请求所必须的文章类型id
+     *  搜索关键词
      */
-    private int mTypeId;
-
+    private String mSearchKey;
     /**
-     *  状态变量，是否已经获取所有数据
+     * 标志变量，是否已经获取所有数据
      */
     private boolean mHasLoadedAll = false;
-
     /**
      *  是否处于刷新状态
      */
     private boolean mIsRefreshing = false;
 
-    private BranchContract.Model mBranchModel;
-    public BranchPresenter(BranchContract.View view) {
+    private ResultContract.ResultModel mResultModel;
+
+    public QueryResultPresenter(ResultContract.ResultView view) {
         super(view);
-        mBranchModel = BranchModel.newInstance();
+        mResultModel = new QueryResultModel();
     }
 
-
-    /**
-     *  第一次初始化列表的请求，需要明确传入文章的类型id
-     * @param typeId 代表项目的一个类型的具体id
-     */
-    @Override
-    public void firstRequest(int typeId) {
-        // 缓存类型id
-        mTypeId = typeId;
-        // 按照刷新操作，进行请求
-        refresh();
-    }
 
     @Override
     public void refresh() {
@@ -77,13 +64,13 @@ public class BranchPresenter extends BasePresenterImpl<BranchContract.View>
                         mIsRefreshing = false;
                     }
                 };
-        // 进行刷新操作
-        mBranchModel.loadNewArticle(callback, mTypeId);
+        mResultModel.searchArticle(callback, mSearchKey);
     }
+
 
     @Override
     public void showMore() {
-        // 如果已经加载完毕则直接退出
+        // 如果正在刷新或者网络数据全部加载到列表，则直接退出
         if (mIsRefreshing || mHasLoadedAll) {
             return;
         }
@@ -114,7 +101,16 @@ public class BranchPresenter extends BasePresenterImpl<BranchContract.View>
                         }
                     }
                 };
-        // 执行加载更多操作
-        mBranchModel.loadMoreArticle(callback, mTypeId);
+        mResultModel.showMoreArticle(callback, mSearchKey);
+    }
+
+    /**
+     *  重置搜索词并进行一次刷新请求
+     * @param keyword 新的搜索词
+     */
+    @Override
+    public void firstRequest(String keyword) {
+        mSearchKey = keyword;
+        refresh();
     }
 }

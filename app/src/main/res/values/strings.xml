@@ -4,4 +4,7 @@
     <string name="main_search">搜索</string>
     <string name="web_open_in_browser">在浏览器内打开</string>
     <string name="project_picture">项目图片</string>
+    <string name="search_history">历史搜索</string>
+    <string name="search_hot_word">搜索热词</string>
+    <string name="search_clear_history">清空搜索历史</string>
 </resources>

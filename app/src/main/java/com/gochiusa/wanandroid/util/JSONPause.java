@@ -160,4 +160,21 @@ public final class JSONPause {
         }
         return projectList;
     }
+
+    /**
+     *  解析搜索热词的JSON数据
+     */
+    public static List<String> getHotKey(String jsonData) throws JSONException {
+        JSONObject outsideObject = new JSONObject(jsonData);
+        // 获取包含搜索热词的数组
+        JSONArray dataArray = outsideObject.getJSONArray(DATA);
+        int dataLength = dataArray.length();
+        ArrayList<String> hotKeyList = new ArrayList<>(dataLength);
+        for (int i = 0;i < dataLength;i ++) {
+            JSONObject eachObject = dataArray.getJSONObject(i);
+            hotKeyList.add(eachObject.getString(NAME));
+        }
+        return hotKeyList;
+    }
+
 }

@@ -2,18 +2,35 @@ package com.gochiusa.wanandroid.util;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.os.Build;
+import android.os.SystemClock;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.gochiusa.wanandroid.service.NotificationService;
+
 import java.util.List;
 
 public final class ActivityUtil {
+
+    /**
+     *  默认启动延时，为24小时
+     */
+    private static final long RESTART_DELAY = 24 * 60 * 60 * 1000;
 
     /**
      *  隐藏正在显示的碎片，然后显示另一个碎片。
@@ -74,5 +91,61 @@ public final class ActivityUtil {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         // 使用ColorId获取Color，并设置到状态栏上
         window.setStatusBarColor(activity.getResources().getColor(colorId));
+    }
+
+    /**
+     *  使用AlarmManager创建Alarm，在默认的一段时间之后启动服务
+     */
+    public static void startServiceAfter(@Nullable AlarmManager alarmManager, Context context) {
+        startServiceAfter(alarmManager, context, RESTART_DELAY);
+    }
+
+    /**
+     *  使用AlarmManager创建Alarm，在指定的一段时间之后启动服务以推送广播
+     * @param time 指定的活动启动延时，为毫秒数
+     */
+    public static void startServiceAfter(
+            @Nullable AlarmManager alarmManager, Context context, long time) {
+        if (alarmManager == null) {
+            return;
+        }
+        // 获取从开机到现在的毫秒数，然后多久之后开始推送
+        long startTime = SystemClock.elapsedRealtime() + time;
+        // 获取PendingIntent以启动服务
+        Intent intent = new Intent(context, NotificationService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(
+                context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        alarmManager.cancel(pendingIntent);
+        // 先取消掉上一次填充的Alarm
+        alarmManager.cancel(pendingIntent);
+        // 重新创建Alarm
+        alarmManager.setExact(AlarmManager.ELAPSED_REALTIME, startTime ,pendingIntent);
+    }
+
+    public static boolean checkNetWork(@Nullable Context context) {
+        if (context == null) {
+            return false;
+        }
+        ConnectivityManager manager = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (manager == null) {
+            return false;
+        }
+        // 分版本调用API
+        if (Build.VERSION.SDK_INT < 23) {
+            NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+            return networkInfo != null && networkInfo.isAvailable();
+        } else {
+            Network network = manager.getActiveNetwork();
+            if (network == null) {
+                return false;
+            }
+            NetworkCapabilities capabilities = manager.getNetworkCapabilities(network);
+            if (capabilities == null) {
+                return false;
+            }
+            return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+
+        }
     }
 }

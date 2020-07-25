@@ -24,17 +24,6 @@ public class ChildPageFragment extends BaseRecyclerViewFragment<ChildContract.Ch
 
     private int mProjectTypeId;
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.layout_recycler_view, container,false);
-        initChildView(view);
-        // 向Presenter请求最初的数据
-        getPresenter().firstRequest(mProjectTypeId);
-        return view;
-    }
-
     /**
      *  重写初始化RecyclerView的方法，添加初始化适配器的部分
      */
@@ -45,6 +34,11 @@ public class ChildPageFragment extends BaseRecyclerViewFragment<ChildContract.Ch
         recyclerView.setAdapter(mProjectAdapter);
     }
 
+    @Override
+    protected void requestFirstData() {
+        // 向Presenter请求最初的数据
+        getPresenter().firstRequest(mProjectTypeId);
+    }
 
     @Override
     protected ChildContract.ChildPresenter onBindPresenter() {

@@ -7,6 +7,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,7 +19,9 @@ import com.gochiusa.wanandroid.R;
 import com.gochiusa.wanandroid.tasks.main.home.HomePageFragment;
 import com.gochiusa.wanandroid.tasks.main.project.ProjectPageFragment;
 import com.gochiusa.wanandroid.tasks.main.sort.SortPageFragment;
+import com.gochiusa.wanandroid.tasks.search.SearchActivity;
 import com.gochiusa.wanandroid.util.ActivityUtil;
+import com.gochiusa.wanandroid.util.NotificationUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
@@ -59,6 +65,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initChildView();
         initFragments();
+        initNotificationChannel();
+        // 创建定时任务
+        ActivityUtil.startServiceAfter(
+                (AlarmManager) getSystemService(Context.ALARM_SERVICE), this);
     }
 
 
@@ -128,6 +138,17 @@ public class MainActivity extends AppCompatActivity {
         mTopFragment = mHomePageFragment;
     }
 
+    /**
+     *  尝试创建通知渠道
+     */
+    private void initNotificationChannel() {
+        // 如果版本大于8，创建通知渠道
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationUtil.createNotificationChannel((NotificationManager) getSystemService(
+                    Context.NOTIFICATION_SERVICE));
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -139,11 +160,18 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_main_toolbar_search : {
-
+                SearchActivity.startThisActivity(this);
                 break;
             }
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        // 清除所有绑定在碎片管理器上的碎片
+        ActivityUtil.detachAllFragment(mFragmentManager);
+        super.onBackPressed();
     }
 
     /**
@@ -155,13 +183,5 @@ public class MainActivity extends AppCompatActivity {
             ActivityUtil.hideFragmentWithShow(mFragmentManager, fragment, mTopFragment);
             mTopFragment = fragment;
         }
-    }
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // 清除所有碎片
-        ActivityUtil.detachAllFragment(mFragmentManager);
     }
 }
