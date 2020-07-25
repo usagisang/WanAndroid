@@ -33,11 +33,18 @@ public class SearchPresenter extends BasePresenterImpl<SearchContract.View>
     public void requestData() {
         // 请求热词数据
         mHotWordFuture = mSearchModel.loadHotWord(refreshHotWord());
+        // 请求历史数据
+        mHistoryFuture = mSearchModel.loadHistory(refreshHistory());
     }
 
     @Override
     public void clearHistory() {
+        mSearchModel.clearHistoryFromDisk();
+    }
 
+    @Override
+    public void addHistory(String history, boolean oldData) {
+        mSearchModel.addHistoryToDisk(history, oldData);
     }
 
     private Runnable refreshHotWord() {
@@ -49,6 +56,25 @@ public class SearchPresenter extends BasePresenterImpl<SearchContract.View>
                     // 回调View的方法
                     if (isViewAttach()) {
                         getView().showHotWord(list);
+                    }
+                } catch (ExecutionException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Log.e(mErrorTag, mErrorMessage);
+            }
+        };
+    }
+
+    private Runnable refreshHistory() {
+        return () -> {
+            if (mHistoryFuture != null) {
+                try {
+                    // 尝试获取请求结果
+                    List<String> list = mHistoryFuture.get();
+                    // 回调View的方法以显示历史记录
+                    if (isViewAttach()) {
+                        getView().showHistory(list);
                     }
                 } catch (ExecutionException | InterruptedException e) {
                     e.printStackTrace();

@@ -14,9 +14,12 @@ public interface SearchContract {
     interface Presenter extends BasePresenter {
         void requestData();
         void clearHistory();
+        void addHistory(String history, boolean oldData);
     }
     interface Model {
         Future<List<String>> loadHotWord(Runnable runInMainThread);
         Future<List<String>> loadHistory(Runnable runInMainThread);
+        void clearHistoryFromDisk();
+        void addHistoryToDisk(String history, boolean oldData);
     }
 }

@@ -129,6 +129,12 @@ public class SearchActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        mFragmentManager.popBackStack();
+    }
+
     /**
      *  初始化SearchView的设置
      */
@@ -141,10 +147,14 @@ public class SearchActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                // 去除前后空格
+                String keyWord = query.trim();
                 // 关闭软键盘
                 searchView.clearFocus();
+                // 添加历史记录
+                mSearchFragment.addHistory(keyWord);
                 // 提交搜索
-                showSearchResult(query);
+                showSearchResult(keyWord);
                 return false;
             }
             @Override
