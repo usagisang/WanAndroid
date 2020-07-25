@@ -5,6 +5,10 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +26,8 @@ public class FlowLayout extends ViewGroup {
      */
     private List<Integer> mLineHeightList = new ArrayList<>();
 
+    private Adapter mAdapter;
+
 
     public FlowLayout(Context context) {
         super(context);
@@ -33,6 +39,21 @@ public class FlowLayout extends ViewGroup {
 
     public FlowLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+    }
+
+    @Override
+    protected LayoutParams generateDefaultLayoutParams() {
+        return new MarginLayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+    }
+
+    @Override
+    protected LayoutParams generateLayoutParams(LayoutParams p) {
+        return new MarginLayoutParams(p);
+    }
+
+    @Override
+    protected boolean checkLayoutParams(LayoutParams p) {
+        return p instanceof MarginLayoutParams;
     }
 
     @Override
@@ -50,16 +71,13 @@ public class FlowLayout extends ViewGroup {
         List<View> eachLineList = new ArrayList<>();
 
         // 获得此ViewGroup上级容器为其推荐的宽和高，以及计算模式
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int sizeWidth = MeasureSpec.getSize(widthMeasureSpec);
         int sizeHeight = MeasureSpec.getSize(heightMeasureSpec);
 
-
         // 子View个数
         int childCount = getChildCount();
         // 在wrap_content模式下，记录最大宽度和累计高度
-        int maxWidth = 0;
         int totalHeight = 0;
         // 缓存每一行的子View累计宽度和子View最大宽度
         int lineWidth = 0;
@@ -67,15 +85,22 @@ public class FlowLayout extends ViewGroup {
         // 循环测量子View
         for (int i = 0;i < childCount;i ++) {
             View childView = getChildAt(i);
+            // 如果为GONE状态，直接无视
+            if (childView.getVisibility() == View.GONE) {
+                continue;
+            }
             // 先测量子View的宽高信息
             measureChild(childView, widthMeasureSpec, heightMeasureSpec);
             // 获取子元素的属性，以此获取Margin信息
             MarginLayoutParams params = (MarginLayoutParams) childView.getLayoutParams();
             // 添加了Margin之后，一个子View实际占用的宽高
-            int childWidth = childView.getWidth() + params.leftMargin + params.rightMargin;
-            int childHeight = childView.getHeight() + params.topMargin + params.bottomMargin;
+            int childWidth = childView.getMeasuredWidth() + params.leftMargin + params.rightMargin;
+            int childHeight = childView.getMeasuredHeight() + params.topMargin + params.bottomMargin;
             // 判断是否可以换行，不换行则累计宽度并寻找最大高度，换行则寻找最大宽度并累计总高度
             if (turnNewLine(lineWidth, childWidth, sizeWidth)) {
+                // 缓存这一行的最大高度
+                mLineHeightList.add(lineMaxHeight);
+
                 // 将当前的行，储存进入缓存
                 mLineCacheList.add(eachLineList);
                 // 创建新的一行的View的集合
@@ -83,13 +108,8 @@ public class FlowLayout extends ViewGroup {
                 // 将这个View加入到新的一行
                 eachLineList.add(childView);
 
-                // 在行累积宽度和子View宽度寻找最大宽度
-                maxWidth = Math.max(lineWidth, childWidth);
                 // 进行高度累积
                 totalHeight += lineMaxHeight;
-
-                // 缓存这一行的最大高度
-                mLineHeightList.add(lineMaxHeight);
 
                 // 将子View的宽度、高度赋值到下一行
                 lineWidth = childWidth;
@@ -105,8 +125,6 @@ public class FlowLayout extends ViewGroup {
             }
             // 对最后一个元素的补正，避免没有被算入参数
             if (i == childCount - 1) {
-                // 再次计算最大宽度。
-                maxWidth = Math.max(lineWidth, childWidth);
                 // 不管换不换行，都需要累加高度
                 totalHeight += childHeight;
 
@@ -116,12 +134,14 @@ public class FlowLayout extends ViewGroup {
                 mLineHeightList.add(lineMaxHeight);
             }
         }
-        // 设置这个ViewGroup最终的宽高信息，因为对应状态下有4种传参方式，使用三元运算符简化
-        setMeasuredDimension(
-                widthMode == MeasureSpec.EXACTLY ?
-                        sizeWidth : maxWidth + getPaddingRight() + getPaddingLeft(),
-                heightMode == MeasureSpec.EXACTLY ?
-                        sizeHeight : totalHeight + getPaddingBottom() + getPaddingTop());
+        // 设置这个ViewGroup最终的宽高信息
+        if (heightMode == MeasureSpec.EXACTLY) {
+            totalHeight = sizeHeight;
+        } else if (heightMode == MeasureSpec.AT_MOST) {
+            totalHeight = Math.min(
+                    sizeHeight, totalHeight + getPaddingTop() + getPaddingBottom());
+        }
+        setMeasuredDimension(sizeWidth, totalHeight);
     }
 
     /**
@@ -155,8 +175,68 @@ public class FlowLayout extends ViewGroup {
             paintLeft = paddingLeft;
             paintTop += mLineHeightList.get(i);
         }
-        // 清除缓存数据
-        mLineHeightList.clear();
-        mLineCacheList.clear();
+    }
+
+    public void setAdapter(Adapter adapter) {
+        this.removeAllViews();
+        mAdapter = adapter;
+        for (int i = 0; i < adapter.getItemCount(); i ++) {
+            // 子View添加到ViewGroup
+            this.addView(createView(i, adapter));
+        }
+    }
+
+    /**
+     *  通知适配器的绑定数据已经被更新
+     */
+    public void notifyDataSetChange() {
+        synchronized (this) {
+            if (mAdapter != null) {
+                setAdapter(mAdapter);
+            }
+        }
+    }
+
+    /**
+     *  通知有一个新的子项View需要插入到ViewGroup
+     * @param position  插入的子项的位置
+     */
+    public void notifyItemInsert(int position) {
+        synchronized (this) {
+            if (mAdapter != null) {
+                this.addView(createView(position, mAdapter), position);
+            }
+        }
+    }
+
+    /**
+     *  创建指定位置的View和ViewHolder
+     * @param position 指定位置的下标
+     * @param adapter 创建View需要的适配器
+     * @return 创建完毕的View
+     */
+    private View createView(int position, @NonNull Adapter adapter) {
+        // 创建ViewHolder
+        ViewHolder viewHolder = adapter.onCreateViewHolder(
+                this, adapter.getItemViewType(position));
+        // 绑定数据
+        adapter.onBindViewHolder(viewHolder, position);
+        return viewHolder.itemView;
+    }
+
+    public abstract static class Adapter<VH extends ViewHolder> {
+        public abstract VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType);
+        public abstract void onBindViewHolder(@NonNull VH holder, int position);
+        public abstract int getItemCount();
+        public int getItemViewType(int position) {
+            return 0;
+        }
+    }
+
+    public abstract static class ViewHolder {
+        public final View itemView;
+        public ViewHolder(@NonNull View itemView) {
+            this.itemView = itemView;
+        }
     }
 }
