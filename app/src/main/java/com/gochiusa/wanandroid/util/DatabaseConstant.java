@@ -27,5 +27,9 @@ public final class DatabaseConstant {
             DATE_COLUMN_NAME + " TEXT)";
 
     public static final String CREATE_SEARCH_HISTORY_TABLE = "CREATE TABLE " + HISTORY_TABLE_NAME
-            + " (" + QUERY_COLUMN_NAME + "TEXT NOT NULL)";
+            + " (" + QUERY_COLUMN_NAME + " TEXT NOT NULL,"
+            + DATE_COLUMN_NAME + " INTEGER NOT NULL)";
+
+    public static final String SELECT_ALL_HISTORY = "SELECT * FROM " + HISTORY_TABLE_NAME
+            + " ORDER BY " + DATE_COLUMN_NAME + " DESC";
 }

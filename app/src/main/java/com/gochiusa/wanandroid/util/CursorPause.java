@@ -38,4 +38,20 @@ public final class CursorPause {
         cursor.close();
         return list;
     }
+
+    /**
+     *  解析包含历史搜索记录的结果集
+     * @return 历史搜索记录的字符串
+     */
+    public static List<String> getHistory(Cursor cursor) {
+        List<String> list = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            do {
+                list.add(cursor.getString(cursor.getColumnIndex(QUERY_COLUMN_NAME)));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return list;
+    }
+
 }
