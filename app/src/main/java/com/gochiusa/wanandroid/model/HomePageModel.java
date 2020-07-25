@@ -66,6 +66,9 @@ public class HomePageModel extends HttpModel<Article> implements HomePageContrac
             message.what = REQUEST_SUCCESS;
             // 发送消息，回到主线程进行后续处理
             getMainHandler().sendMessage(message);
+            // 关闭相关资源
+            readableDatabase.close();
+            helper.close();
         };
         getThreadPool().submit(runnable);
     }
@@ -86,6 +89,9 @@ public class HomePageModel extends HttpModel<Article> implements HomePageContrac
                 writeableDatabase.insert(DatabaseConstant.ARTICLE_TABLE_NAME,
                         null, contentValues);
             }
+            // 关闭相关资源
+            writeableDatabase.close();
+            helper.close();
         };
         getThreadPool().submit(runnable);
     }
