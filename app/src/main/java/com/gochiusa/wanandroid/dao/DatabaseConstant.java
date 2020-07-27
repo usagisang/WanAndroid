@@ -1,4 +1,4 @@
-package com.gochiusa.wanandroid.util;
+package com.gochiusa.wanandroid.dao;
 
 public final class DatabaseConstant {
     public static final String DATABASE_NAME = "LocalArticle.db";

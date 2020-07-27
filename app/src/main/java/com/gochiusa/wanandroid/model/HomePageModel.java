@@ -1,21 +1,15 @@
 package com.gochiusa.wanandroid.model;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.os.Message;
 
 import com.gochiusa.wanandroid.base.RequestCallback;
 import com.gochiusa.wanandroid.base.model.HttpModel;
+import com.gochiusa.wanandroid.dao.ArticleDao;
 import com.gochiusa.wanandroid.entity.Article;
 import com.gochiusa.wanandroid.tasks.main.home.HomePageContract;
 import com.gochiusa.wanandroid.util.CreateURLToRequest;
-import com.gochiusa.wanandroid.util.CursorPause;
-import com.gochiusa.wanandroid.util.DatabaseConstant;
-import com.gochiusa.wanandroid.util.DatabaseHelper;
 import com.gochiusa.wanandroid.util.JSONPause;
-import com.gochiusa.wanandroid.util.MyApplication;
 import com.gochiusa.wanandroid.util.OffsetCalculator;
 
 import org.json.JSONException;
@@ -54,21 +48,11 @@ public class HomePageModel extends HttpModel<Article> implements HomePageContrac
             Message message = Message.obtain();
             // 将回调接口存进message
             message.obj = callback;
-            // 打开数据库管理类
-            DatabaseHelper helper = DatabaseHelper.openDefaultDatabase();
-            SQLiteDatabase readableDatabase = helper.getReadableDatabase();
-            // 查询所有文章的信息
-            Cursor articleCursor = readableDatabase.query(DatabaseConstant.ARTICLE_TABLE_NAME,
-                    null, null, null,
-                    null, null, null);
-            // 解析歌曲信息并添加到缓存列表中
-            mCacheList = CursorPause.getArticles(articleCursor);
+            // 使用数据库接口直接请求数据
+            mCacheList = ArticleDao.newInstance().selectAll();
             message.what = REQUEST_SUCCESS;
             // 发送消息，回到主线程进行后续处理
             getMainHandler().sendMessage(message);
-            // 关闭相关资源
-            readableDatabase.close();
-            helper.close();
         };
         getThreadPool().submit(runnable);
     }
@@ -76,22 +60,11 @@ public class HomePageModel extends HttpModel<Article> implements HomePageContrac
     @Override
     public void saveToDatabase(List<Article> articleList) {
         Runnable runnable = () -> {
-            // 打开数据库管理类
-            DatabaseHelper helper = DatabaseHelper.openDefaultDatabase();
-            SQLiteDatabase writeableDatabase = helper.getWritableDatabase();
-            // 删除数据库的全部数据
-            writeableDatabase.delete(DatabaseConstant.ARTICLE_TABLE_NAME,
-                    null, null);
-            ContentValues contentValues = new ContentValues();
-            // 迭代组装、插入新的数据
-            for (Article article : articleList) {
-                initContentValue(article, contentValues);
-                writeableDatabase.insert(DatabaseConstant.ARTICLE_TABLE_NAME,
-                        null, contentValues);
-            }
-            // 关闭相关资源
-            writeableDatabase.close();
-            helper.close();
+            ArticleDao articleDao = ArticleDao.newInstance();
+            // 删除全部数据
+            articleDao.deleteAll();
+            // 插入列表中的文章的数据
+            articleDao.insert(articleList);
         };
         getThreadPool().submit(runnable);
     }
@@ -130,16 +103,4 @@ public class HomePageModel extends HttpModel<Article> implements HomePageContrac
         };
     }
 
-    /**
-     *  使用实体类组装{@code ContentValues}填充入数据库的信息
-     */
-    private void initContentValue(Article article, ContentValues values) {
-        values.clear();
-        values.put(DatabaseConstant.AUTHOR_COLUMN_NAME, article.getAuthor());
-        values.put(DatabaseConstant.TITLE_COLUMN_NAME, article.getTitle());
-        values.put(DatabaseConstant.CHAPTER_COLUMN_NAME, article.getChapterName());
-        values.put(DatabaseConstant.DATE_COLUMN_NAME, article.getNiceDate());
-        values.put(DatabaseConstant.SUPER_COLUMN_NAME, article.getSuperChapterName());
-        values.put(DatabaseConstant.LINK_COLUMN_NAME, article.getLink());
-    }
 }

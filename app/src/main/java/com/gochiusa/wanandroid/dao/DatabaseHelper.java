@@ -1,10 +1,12 @@
-package com.gochiusa.wanandroid.util;
+package com.gochiusa.wanandroid.dao;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
+
+import com.gochiusa.wanandroid.util.MyApplication;
 
 public final class DatabaseHelper extends SQLiteOpenHelper {
     public DatabaseHelper(@Nullable Context context,

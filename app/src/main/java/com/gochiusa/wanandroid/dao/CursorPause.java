@@ -1,9 +1,9 @@
-package com.gochiusa.wanandroid.util;
+package com.gochiusa.wanandroid.dao;
 
 import android.database.Cursor;
 
 import com.gochiusa.wanandroid.entity.Article;
-import static com.gochiusa.wanandroid.util.DatabaseConstant.*;
+import static com.gochiusa.wanandroid.dao.DatabaseConstant.*;
 
 import java.util.ArrayList;
 import java.util.List;
