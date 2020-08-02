@@ -115,7 +115,6 @@ public final class ActivityUtil {
         Intent intent = new Intent(context, NotificationService.class);
         PendingIntent pendingIntent = PendingIntent.getService(
                 context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        alarmManager.cancel(pendingIntent);
         // 先取消掉上一次填充的Alarm
         alarmManager.cancel(pendingIntent);
         // 重新创建Alarm

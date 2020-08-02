@@ -4,6 +4,9 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -61,5 +64,18 @@ final class Utils {
             secretBytes = new byte[0];
         }
         return new BigInteger(1, secretBytes).toString(16);
+    }
+
+    public static byte[] toByteArray(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        int count;
+        // 缓存字节数组
+        byte[] bytes = new byte[1024 * 4];
+        while ((count = inputStream.read(bytes)) > 0) {
+            outputStream.write(bytes, 0, count);
+        }
+        byte[] result = outputStream.toByteArray();
+        outputStream.close();
+        return result;
     }
 }

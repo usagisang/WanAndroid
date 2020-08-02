@@ -1,7 +1,5 @@
 package com.gochiusa.wanandroid.base.view;
 
-import android.app.Activity;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.gochiusa.wanandroid.base.presenter.BasePresenter;
@@ -23,11 +21,6 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
             mPresenter = onBindPresenter();
         }
         return mPresenter;
-    }
-
-    @Override
-    public Activity getSelfView() {
-        return this;
     }
 
     /**

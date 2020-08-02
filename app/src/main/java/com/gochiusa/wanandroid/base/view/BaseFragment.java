@@ -1,6 +1,5 @@
 package com.gochiusa.wanandroid.base.view;
 
-import android.app.Activity;
 
 import androidx.fragment.app.Fragment;
 
@@ -11,10 +10,6 @@ import com.gochiusa.wanandroid.util.ActivityUtil;
  *  只有需要自行控制查询数据行为的碎片才需要继承这个基类
  */
 public abstract class BaseFragment<P extends BasePresenter> extends Fragment implements BaseView {
-    @Override
-    public Activity getSelfView() {
-        return getActivity();
-    }
     private P mPresenter;
 
     /**

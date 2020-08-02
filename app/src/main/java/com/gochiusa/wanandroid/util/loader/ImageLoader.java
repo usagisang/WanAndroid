@@ -2,11 +2,19 @@ package com.gochiusa.wanandroid.util.loader;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,23 +48,52 @@ public class ImageLoader {
      */
     private Downloader downLoader;
 
+    /**
+     *  处理器的列表
+     */
+    List<RequestHandler> requestHandlers;
+
     static ImageLoader singleton;
 
-    ImageLoader(Context context, ExecutorService executorService,
-                Downloader downLoader, Cache cache, Dispatcher dispatcher) {
+
+    public static final int REQUEST_ERROR = 31;
+
+    static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            if (Dispatcher.WORKER_BATCH_COMPLETE == msg.what) {
+                // 获取批处理列表
+                List<Worker> workers = (List<Worker>) msg.obj;
+                for (Worker worker : workers) {
+                    // 获取ImageLoader处理Worker
+                    worker.getAction().imageLoader.complete(worker);
+                }
+            }
+        }
+    };
+
+    ImageLoader(Context context, ExecutorService executorService, Downloader downLoader,
+                Cache cache, Dispatcher dispatcher, List<RequestHandler> extraRequestHandler) {
         this.context = context;
         this.executorService = executorService;
         this.downLoader = downLoader;
         this.memoryCache = cache;
         targetToAction = new HashMap<>();
         this.dispatcher = dispatcher;
+        // 创建一个临时的列表
+        List<RequestHandler> allRequestHandlerList = new ArrayList<>();
+        if (extraRequestHandler != null) {
+            allRequestHandlerList.addAll(extraRequestHandler);
+        }
+        allRequestHandlerList.add(new NetworkRequestHandler(downLoader));
+        // 创建不可变的列表
+        requestHandlers = Collections.unmodifiableList(allRequestHandlerList);
     }
 
     /**
      * 采用Double Check Lock方式获取单例
      */
     public static ImageLoader with(@NonNull Context context) {
-
         if (singleton == null) {
             synchronized (ImageLoader.class) {
                 if (singleton == null) {
@@ -72,7 +109,15 @@ public class ImageLoader {
      * @param path 图片的加载地址，目前只支持Http或Https协议
      */
     public ActionCreator load(String path) {
-        return new ActionCreator(this, path);
+        return new ActionCreator(this, Uri.parse(path), path);
+    }
+
+    /**
+     *  创建{@link Action}的建造类{@link ActionCreator}
+     * @param uri 加载图片的Uri
+     */
+    public ActionCreator load(Uri uri) {
+        return new ActionCreator(this, uri, uri.toString());
     }
 
     void enqueueAndSubmit(Action action) {
@@ -86,7 +131,7 @@ public class ImageLoader {
     }
 
     void submit(Action action) {
-        dispatcher.performSubmit(action);
+        dispatcher.dispatchSubmit(action);
     }
 
     void cancelRequest(Object target) {
@@ -94,7 +139,7 @@ public class ImageLoader {
         Action action = targetToAction.remove(target);
         if (action != null) {
             action.cancel();
-            dispatcher.performCancel(action);
+            dispatcher.dispatchCancel(action);
         }
     }
 
@@ -113,7 +158,6 @@ public class ImageLoader {
         Bitmap result = worker.getResult();
         if (result != null) {
             // 如果能够顺利获取位图
-            memoryCache.set(action.key, result);
             action.complete(result);
         } else {
             // 不能则回调error()
@@ -140,6 +184,7 @@ public class ImageLoader {
         private ExecutorService executorService;
         private Downloader downloader;
         private Cache cache;
+        private List<RequestHandler> requestHandlerList;
 
         public Builder(@NonNull Context context) {
             this.context = context;
@@ -160,6 +205,17 @@ public class ImageLoader {
             return this;
         }
 
+        public Builder addRequestHandler(@NonNull RequestHandler requestHandler) {
+            // 懒加载
+            if (requestHandlerList == null) {
+                requestHandlerList = new ArrayList<>();
+            }
+            if (! requestHandlerList.contains(requestHandler)) {
+                requestHandlerList.add(requestHandler);
+            }
+            return this;
+        }
+
         public ImageLoader build() {
             if (this.cache == null) {
                 this.cache = new MemoryCache(context);
@@ -173,8 +229,9 @@ public class ImageLoader {
             if (this.executorService == null) {
                 this.executorService = Executors.newCachedThreadPool();
             }
-            Dispatcher dispatcher = new Dispatcher(downloader, executorService);
-            return new ImageLoader(context, executorService, downloader, cache, dispatcher);
+            Dispatcher dispatcher = new Dispatcher(downloader, executorService, cache, MAIN_HANDLER);
+            return new ImageLoader(context, executorService, downloader,
+                    cache, dispatcher, requestHandlerList);
         }
 
     }
