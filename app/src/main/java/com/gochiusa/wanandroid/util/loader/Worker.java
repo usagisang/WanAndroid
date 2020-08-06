@@ -24,6 +24,11 @@ class Worker implements Runnable {
         }
     };
 
+    /**
+     * Worker任务被创建的时间
+     */
+    final long createTime = System.currentTimeMillis();
+
     private final Action action;
     private Cache mMemoryCache;
     private final Dispatcher dispatcher;
@@ -45,6 +50,10 @@ class Worker implements Runnable {
 
     @Override
     public void run() {
+        // 在LIFO模式，检查一遍请求是否已经被取消
+        if (ImageLoader.singleton.LIFO && action.isCancelled()) {
+            return;
+        }
         try {
             result = loadBitmap();
             dispatcher.dispatchComplete(this);

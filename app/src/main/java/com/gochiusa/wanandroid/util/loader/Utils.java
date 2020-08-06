@@ -13,6 +13,10 @@ import java.security.NoSuchAlgorithmException;
 
 import static android.content.Context.ACTIVITY_SERVICE;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
+
 final class Utils {
     /**
      *  内存缓存允许的最大容量，20M
@@ -77,5 +81,28 @@ final class Utils {
         byte[] result = outputStream.toByteArray();
         outputStream.close();
         return result;
+    }
+
+    /**
+     *  根据LIFO或者是FIFO模式，创建不同的队列返回
+     */
+    public static BlockingQueue<Runnable> createQueue(boolean LIFO) {
+        if (LIFO) {
+            return new PriorityBlockingQueue<>(11,
+                    (runnableOne, runnableTwo) -> {
+                        // 确保两者类型都是Worker
+                        if ((runnableOne instanceof Worker)
+                                && (runnableTwo instanceof Worker)) {
+                            Worker workerOne = (Worker) runnableOne;
+                            Worker workerTwo = (Worker) runnableTwo;
+                            // 由于队列按照升序排序，时间越大的反而应该在比较中返回负数
+                            return (int) (workerTwo.createTime - workerOne.createTime) / 1000;
+                        } else {
+                            return 0;
+                        }
+                    });
+        } else {
+            return new LinkedBlockingQueue<>();
+        }
     }
 }
